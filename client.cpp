@@ -1,25 +1,8 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/socket.h>
 #include <string>
 #include <iostream>
-#include "node.h"
 #include "message.h"
+#include "client.h"
 
-using namespace std;
-
-class Client {
-    private:
-        Node* node;
-        struct sockaddr_in recvfrom;
-
-    public:
-        Client(int port);
-        void send(string address, int port, string req);
-        void recv();
-};
 
 Client::Client(int port){
     node = new Node(port);
@@ -35,9 +18,9 @@ void Client::send(string address, int port, string req){
  void Client::recv(){
     Message* m = Message::deserialize(node->receive_data((struct sockaddr_in *)&recvfrom));
     if (dynamic_cast<Result*>(m) != nullptr) {
-        cout << m->serialize() << endl;
+        std::cout << m->serialize() << std::endl;
     } else{
-        cerr << "Not receiving Result message" << endl;
+        std::cerr << "Not receiving Result message" << std::endl;
     }
     return;
 };
@@ -47,7 +30,7 @@ int main(int argc, char *argv[]) {
     // 0      1         2
     // server server-ip port
     if(argc != 3){
-        printf("Invalid arguments count. Should enter server [server-ip] [port] \n ");
+        std::cout << "Invalid arguments count. Should enter server [server-ip] [port] \n " << std::endl;
         exit(1);
     }
     string request;
