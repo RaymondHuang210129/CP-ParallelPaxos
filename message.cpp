@@ -88,7 +88,7 @@ std::string Decision::serialize() {
 
 
 
-int test() {
+int message_test() {
 
     int slot1 = 1;
     std::string str1 = "com";
@@ -113,15 +113,11 @@ int test() {
     assert(request2 != nullptr);
     message = nullptr;
 
-    std::cout << "." << std::endl;
-
     message = Message::deserialize(response.serialize());
     assert(message != nullptr);
     Response* response2 = dynamic_cast<Response*>(message);
     assert(response2 != nullptr);
     message = nullptr;
-
-    std::cout << "." << std::endl;
 
     message = Message::deserialize(propose.serialize());
     assert(message != nullptr);
@@ -129,15 +125,11 @@ int test() {
     assert(propose2 != nullptr);
     message = nullptr;
 
-    std::cout << "." << std::endl;
-
     message = Message::deserialize(accept.serialize());
     assert(message != nullptr);
     Accept* accept2 = dynamic_cast<Accept*>(message);
     assert(accept2 != nullptr);
     message = nullptr;
-
-    std::cout << "." << std::endl;
 
     message = Message::deserialize(accepted.serialize());
     assert(message != nullptr);
@@ -145,14 +137,10 @@ int test() {
     assert(accepted2 != nullptr);
     message = nullptr;
 
-    std::cout << "." << std::endl;
-
     message = Message::deserialize(decision.serialize());
     assert(message != nullptr);
     Decision* decision2 = dynamic_cast<Decision*>(message);
     assert(decision2 != nullptr);
-
-    std::cout << "." << std::endl;
 
     std::cout << request2->serialize() << std::endl;
     std::cout << response2->serialize() << std::endl;
@@ -160,6 +148,13 @@ int test() {
     std::cout << accept2->serialize() << std::endl;
     std::cout << accepted2->serialize() << std::endl;
     std::cout << decision2->serialize() << std::endl;
+
+    assert(request2->serialize() == request.serialize());
+    assert(response2->serialize() == response.serialize());
+    assert(propose2->serialize() == propose.serialize());
+    assert(accept2->serialize() == accept.serialize());
+    assert(accepted2->serialize() == accepted.serialize());
+    assert(decision2->serialize() == decision.serialize());
 
     return 0;
 }
