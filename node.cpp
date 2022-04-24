@@ -67,7 +67,7 @@ bool Node::send_data(sockaddr_in* receiver, string data){
     cout<<"\n";
     
     // Send some data
-    if(sendto(sock, data.c_str(), strlen(data.c_str()), 0, (sockaddr*)&receiver, (socklen_t)sizeof(struct sockaddr)) < 0){
+    if(sendto(sock, data.c_str(), strlen(data.c_str()), 0, (struct sockaddr *)receiver, (socklen_t)sizeof(struct sockaddr)) < 0){
         perror("Send failed : ");
         return false;
     }
@@ -105,7 +105,7 @@ string Node::receive_data(sockaddr_in* sender){
     
     return reply;
 }
-/*
+
 int main(int argc, char *argv[])
 {
     Node c(51651);
@@ -125,4 +125,4 @@ int main(int argc, char *argv[])
 
     //done
     return 0;
-}*/
+}
