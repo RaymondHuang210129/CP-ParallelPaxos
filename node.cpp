@@ -106,7 +106,7 @@ string Node::receive_data(sockaddr_in* sender){
     return reply;
 }
 
-int main(int argc, char *argv[])
+int node_test(int argc, char *argv[])
 {
     Node c(51651);
     string host;
