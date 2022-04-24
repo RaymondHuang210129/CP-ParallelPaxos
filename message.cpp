@@ -2,6 +2,7 @@
 #include <string>
 #include <memory>
 #include "message.h"
+#include <cassert>
 
 Command::Command(std::string str) : str(str) {}
 std::string Command::serialize() {
