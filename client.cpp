@@ -13,7 +13,7 @@ Client::~Client(){
     delete node;
 };
 
-void Client::send(string address, int port, string req){
+void Client::send(std::string address, int port, std::string req){
     Request request(req);
     node->send_data(address, port, request.serialize());
     return;
@@ -38,10 +38,10 @@ int client_test(int argc, char *argv[]) {
         std::cout << "Invalid arguments count. Should enter server [server-ip] [port] \n " << std::endl;
         exit(1);
     }
-    string request;
+    std::string request;
     Client tmpClient(atoi(argv[2]));
     while(1){
-        getline (cin, request);
+        getline (std::cin, request);
         tmpClient.send(argv[1], 8000, request);
         tmpClient.recv();
     }

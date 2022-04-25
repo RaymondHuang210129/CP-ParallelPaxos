@@ -2,7 +2,6 @@
 #include <iostream>
 #include "message.h"
 #include "acceptor.h"
-#include <pthread.h>
 #include <functional>
 #include <thread>
 #include <cassert>
@@ -23,7 +22,13 @@ void Acceptor::run(void* arg) {
             Accepted accepted(accept->getSlot(), accept->getCommand());
             node->send_data((struct sockaddr_in *)&recvfrom, accepted.serialize());
         }
+        delete m;
     }
+    return;
+}
+
+void Acceptor::terminate() {
+    shouldTerminate = true;
     return;
 }
 

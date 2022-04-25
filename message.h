@@ -86,3 +86,14 @@ public:
     int getSlot();
     Command getCommand();
 };
+
+class Assign : public Message {
+private:    
+    int slot;
+    Command command;
+public:
+    Assign(int slot, Command command);
+    std::string serialize();
+    int getSlot();
+    Command getCommand();
+};
