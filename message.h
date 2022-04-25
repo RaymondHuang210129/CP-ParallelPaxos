@@ -8,7 +8,9 @@ private:
     std::string content;
     std::pair<std::string, int> source;
 public:
+    Command();
     Command(std::string str, std::string address, int port);
+    bool operator < (const Command& other) const; 
     std::string serialize();
     static Command* deserialize(std::string serialized);
     std::string getContent();

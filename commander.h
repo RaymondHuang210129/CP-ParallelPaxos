@@ -4,6 +4,9 @@
 #include <vector>
 #include <utility>
 
+#ifndef COMMANDER_H
+#define COMMANDER_H
+
 class Commander {
     private:
         Node* node;
@@ -20,3 +23,5 @@ class Commander {
         void run(void* arg);
         void terminate();
 };
+
+#endif
