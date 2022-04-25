@@ -6,6 +6,8 @@
 #include "node.h"
 #include "message.h"
 
+#ifndef REPLICA_H
+#define REPLICA_H
 
 class Replica {
     private:
@@ -15,7 +17,7 @@ class Replica {
         std::unordered_set<Command> requests;
         std::unordered_map<int, Command> decisions;
         std::unordered_map<int, Command> proposals;
-        std::vector<std::pair<std::string, int>> leaders;
+        std::vector<std::pair<std::string, int> > leaders;
         int slotIn;
         int slotOut;
         void propose();
@@ -26,3 +28,4 @@ class Replica {
         void terminate();
 };
 
+#endif

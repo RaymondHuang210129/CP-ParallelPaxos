@@ -1,5 +1,8 @@
 #include "node.h"
 
+#ifndef LEADER_H
+#define LEADER_H
+
 class Leader {
     private:
         Node* node;
@@ -14,3 +17,5 @@ class Leader {
         void run(void* arg);
         void terminate();
 };
+
+#endif

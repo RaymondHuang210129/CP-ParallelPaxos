@@ -1,5 +1,8 @@
 #include <string>
 
+#ifndef MESSAGE_H
+#define MESSAGE_H
+
 class Command {
 private:
     std::string content;
@@ -109,3 +112,5 @@ public:
     int getSlot();
     Command getCommand();
 };
+
+#endif

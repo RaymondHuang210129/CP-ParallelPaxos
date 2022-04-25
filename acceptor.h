@@ -1,5 +1,8 @@
 #include "node.h"
 
+#ifndef ACCEPTOR_H
+#define ACCEPTOR_H
+
 class Acceptor {
     private:
         Node* node;
@@ -10,3 +13,5 @@ class Acceptor {
         void run(void* arg);
         void terminate();
 };
+
+#endif
