@@ -72,7 +72,7 @@ bool Node::send_data(sockaddr_in* receiver, std::string data){
         return false;
     }
     
-    std::cout<<"Data send\n";
+    std::cout<<"Data sent\n";
 
     return true;
 }
@@ -90,10 +90,10 @@ bool Node::send_data(std::string address, int port, std::string data){
 /*
     Send data to list of ip(s) & port
 */
-bool Node::broadcast_data(std::vector<std::string>& addresses, int port, std::string data){
+bool Node::broadcast_data(std::vector<std::pair<std::string, int>>& addresses, std::string data){
 	for (int i = 0; i < addresses.size(); i++){
 		struct sockaddr_in receiver;
-		receiver = setDest(addresses[i], port);
+		receiver = setDest(addresses[i].first, addresses[i].second);
 
 		if(!send_data(&receiver, data))
 			return false;
