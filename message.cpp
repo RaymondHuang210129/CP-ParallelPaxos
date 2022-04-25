@@ -69,10 +69,16 @@ Propose::Propose(int slot, Command command) : slot(slot), command(command) {};
 std::string Propose::serialize() {
     return "Propose(" + std::to_string(slot) + "," + command.serialize() + ")";
 };
+int Propose::getSlot() {
+    return slot;
+};
 
 Accept::Accept(int slot, Command command) : slot(slot), command(command) {};
 std::string Accept::serialize() {
     return "Accept(" + std::to_string(slot) + "," + command.serialize() + ")";
+};
+int Accept::getSlot() {
+    return slot;
 };
 
 
@@ -80,11 +86,17 @@ Accepted::Accepted(int slot, Command command) : slot(slot), command(command) {};
 std::string Accepted::serialize() {
     return "Accepted(" + std::to_string(slot) + "," + command.serialize() + ")";
 }
+int Accepted::getSlot() {
+    return slot;
+};
 
 Decision::Decision(int slot, Command command) : slot(slot), command(command) {};
 std::string Decision::serialize() {
     return "Decision(" + std::to_string(slot) + "," + command.serialize() + ")";
 }
+int Decision::getSlot() {
+    return slot;
+};
 
 
 

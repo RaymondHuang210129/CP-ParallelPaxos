@@ -31,6 +31,7 @@ private:
 public:
     Request(Command command);
     std::string serialize();
+    Command getCommand();
 };
 
 class Response : public Message {
@@ -39,6 +40,7 @@ private:
 public:
     Response(Result result);
     std::string serialize();
+    Result getResult();
 };
 
 class Propose : public Message {
@@ -48,6 +50,8 @@ private:
 public:
     Propose(int slot, Command command);
     std::string serialize();
+    int getSlot();
+    Command getCommand();
 };
 
 class Accept : public Message {
@@ -57,6 +61,8 @@ private:
 public:
     Accept(int slot, Command command);
     std::string serialize();
+    int getSlot();
+    Command getCommand();
 };
 
 class Accepted : public Message {
@@ -66,6 +72,8 @@ private:
 public:
     Accepted(int slot, Command command);
     std::string serialize();
+    int getSlot();
+    Command getCommand();
 };
 
 class Decision : public Message {
@@ -75,4 +83,6 @@ private:
 public:
     Decision(int slot, Command command);
     std::string serialize();
+    int getSlot();
+    Command getCommand();
 };
