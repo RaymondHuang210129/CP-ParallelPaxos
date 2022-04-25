@@ -2,22 +2,30 @@
 
 class Command {
 private:
-    std::string str;
+    std::string content;
     std::pair<std::string, int> source;
 public:
     Command(std::string str, std::string address, int port);
     std::string serialize();
     static Command* deserialize(std::string serialized);
+    std::string getContent();
+    std::pair<std::string, int> getSource();
+    std::string getAddress();
+    int getPort();
 };
 
 class Result {
 private:
-    std::string str;
+    std::string content;
     std::pair<std::string, int> source;
 public:
     Result(std::string str, std::string address, int port);
     std::string serialize();
     static Result* deserialize(std::string serialized);
+    std::string getContent();
+    std::pair<std::string, int> getSource();
+    std::string getAddress();
+    int getPort();
 };
 
 class Message {

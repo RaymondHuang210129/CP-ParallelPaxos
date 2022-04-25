@@ -6,10 +6,10 @@
 
 Command::Command(std::string str, std::string address, int port) {
     source = std::make_pair(address, port);
-    this->str = str;
+    this->content = str;
 }
 std::string Command::serialize() {
-    return str + "|" + source.first + "|" + std::to_string(source.second);
+    return content + "|" + source.first + "|" + std::to_string(source.second);
 };
 Command* Command::deserialize(std::string serialized) {
     std::string str = serialized.substr(0, serialized.find("|"));
@@ -18,13 +18,25 @@ Command* Command::deserialize(std::string serialized) {
     int port = std::stoi(remainStr.substr(remainStr.find("|") + 1));
     return new Command(str, address, port);
 };
+std::string Command::getContent() {
+    return content;
+};
+std::pair<std::string, int> Command::getSource() {
+    return source;
+};
+std::string Command::getAddress() {
+    return source.first;
+};
+int Command::getPort() {
+    return source.second;
+};
 
 Result::Result(std::string str, std::string address, int port){
     source = std::make_pair(address, port);
-    this->str = str;
+    this->content = str;
 }
 std::string Result::serialize() {
-    return str + "|" + source.first + "|" + std::to_string(source.second);
+    return content + "|" + source.first + "|" + std::to_string(source.second);
 };
 Result* Result::deserialize(std::string serialized) {
     std::string str = serialized.substr(0, serialized.find("|"));
@@ -32,6 +44,18 @@ Result* Result::deserialize(std::string serialized) {
     std::string address = remainStr.substr(0, remainStr.find("|"));
     int port = std::stoi(remainStr.substr(remainStr.find("|") + 1));
     return new Result(str, address, port);
+};
+std::string Result::getContent() {
+    return content;
+};
+std::pair<std::string, int> Result::getSource() {
+    return source;
+};
+std::string Result::getAddress() {
+    return source.first;
+};
+int Result::getPort() {
+    return source.second;
 };
 
 Message::Message() {};
