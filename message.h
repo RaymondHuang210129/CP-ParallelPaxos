@@ -37,7 +37,7 @@ class Message {
 private:
 public:
     Message();
-    std::string serialize();
+    virtual std::string serialize() = 0;
     virtual ~Message();
     static Message* deserialize(std::string serialized);
 };
@@ -47,7 +47,7 @@ private:
     Command command;
 public:
     Request(Command command);
-    std::string serialize();
+    virtual std::string serialize();
     Command getCommand();
 };
 
@@ -56,7 +56,7 @@ private:
     Result result;
 public:
     Response(Result result);
-    std::string serialize();
+    virtual std::string serialize();
     Result getResult();
 };
 
@@ -66,7 +66,7 @@ private:
     Command command;
 public:
     Propose(int slot, Command command);
-    std::string serialize();
+    virtual std::string serialize();
     int getSlot();
     Command getCommand();
 };
@@ -77,7 +77,7 @@ private:
     Command command;
 public:
     Accept(int slot, Command command);
-    std::string serialize();
+    virtual std::string serialize();
     int getSlot();
     Command getCommand();
 };
@@ -88,7 +88,7 @@ private:
     Command command;
 public:
     Accepted(int slot, Command command);
-    std::string serialize();
+    virtual std::string serialize();
     int getSlot();
     Command getCommand();
 };
@@ -99,7 +99,7 @@ private:
     Command command;
 public:
     Decision(int slot, Command command);
-    std::string serialize();
+    virtual std::string serialize();
     int getSlot();
     Command getCommand();
 };
@@ -110,7 +110,7 @@ private:
     Command command;
 public:
     Assign(int slot, Command command);
-    std::string serialize();
+    virtual std::string serialize();
     int getSlot();
     Command getCommand();
 };

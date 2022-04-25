@@ -63,7 +63,6 @@ int Result::getPort() {
 };
 
 Message::Message() {};
-std::string Message::serialize() {return "";};
 Message::~Message() {};
 Message* Message::deserialize(std::string serialized) {
     if (serialized.substr(0, 8) == "Request(") {
@@ -120,7 +119,7 @@ Message* Message::deserialize(std::string serialized) {
         return assign;
     } else {
         std::cout << "unrecognized serialized" << std::endl;
-        return new Message();
+        return nullptr;
     }
 };
 
@@ -198,7 +197,7 @@ Command Assign::getCommand() {
 
 
 
-int message_test() {
+int main() {
 
     int slot1 = 1;
     std::string str1 = "com";
