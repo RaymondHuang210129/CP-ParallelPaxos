@@ -107,7 +107,9 @@ bool Node::broadcast_data(std::vector<std::string>& addresses, int port, std::st
 std::string Node::receive_data(sockaddr_in* sender){
     char buffer[MAX_BUF_SIZE];
     std::string reply;
-
+	
+	memset(&buffer, 0, sizeof(buffer));
+	 
     //Receive a reply from the receiver
 	socklen_t sender_length = (socklen_t)sizeof(struct sockaddr);
     if(recvfrom(sock, buffer, sizeof(buffer), 0, (sockaddr*)sender, &sender_length) < 0){
