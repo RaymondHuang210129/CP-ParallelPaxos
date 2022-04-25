@@ -16,6 +16,6 @@ class Client {
         void send(std::string req);
         Result recv();
 		void run();
-		bool isTerminate();
+		bool needTerminate();
 };
 #endif

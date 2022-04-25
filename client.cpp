@@ -42,17 +42,17 @@ Result Client::recv(){
 };
 
 void Client::run(){
-	while(isTerminate()){
+	while(!needTerminate()){
 		send(request->serialize());
 		while(request->getCommand().serialize() != recv().serialize()){
-			std::cout << "Mismatch rspd" << std::endl;
+			std::cout << "Mismatch command" << std::endl;
 		}
 	}
 };
 
-bool Client::isTerminate() {
+bool Client::needTerminate() {
 	++recv_count;
-	return (recv_count != CLIENT_RECV_MAX);
+	return (recv_count == CLIENT_RECV_MAX);
 }
 
 int main(int argc, char *argv[]) {
