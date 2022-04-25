@@ -3,7 +3,7 @@
 void read_config(std::vector<std::pair<std::string, int> > &replicas, std::vector<std::pair<std::string, int> > &leaders,
                 std::vector<std::pair<std::string, int> > &acceptors){
     std::ifstream config;
-    config.open("config.txt");
+    config.open("config.conf");
     std::string tmp;
     while (getline(config,tmp) && tmp != "----"){ // process replicas
         std::string delimiter = " ";
