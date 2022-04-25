@@ -9,6 +9,10 @@ Client::Client(int port){
 	request = new Request(Command("com", "address", 123));
     memset(&recvfrom, 0, sizeof(recvfrom));
 	recv_count = 0;
+	
+    std::vector<std::pair<std::string, int> > leaders;
+    std::vector<std::pair<std::string, int> > acceptors;
+	read_config(replicas, leaders, acceptors);
 };
 
 Client::~Client(){
@@ -16,8 +20,8 @@ Client::~Client(){
 	delete request;
 };
 
-void Client::send(std::string address, int port, std::string req){
-    node->send_data(address, port, req);
+void Client::send(std::string req){
+    node->broadcast_data(replicas, req);
     return;
 };
 
@@ -39,7 +43,7 @@ Result Client::recv(){
 
 void Client::run(char *dest_ip, int port){
 	while(isTerminate()){
-		send(dest_ip, port, request->serialize());
+		send(request->serialize());
 		
 		while(request->getCommand().serialize() != recv().serialize()){
 			std::cout << "Mismatch rspd" << std::endl;

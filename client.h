@@ -9,10 +9,11 @@ class Client {
         bool shouldTerminate;
 		Request* request;
 		int recv_count;
+		std::vector<std::pair<std::string, int> > replicas;
     public:
         Client(int port);
 		~Client();
-        void send(std::string address, int port, std::string req);
+        void send(std::string req);
         Result recv();
 		void run(char*, int);
 		bool isTerminate();

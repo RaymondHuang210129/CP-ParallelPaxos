@@ -112,5 +112,9 @@ $RECYCLE.BIN/
 
 #executable files
 main
+client
+replica
+leader
+acceptor
 
 # End of https://www.toptal.com/developers/gitignore/api/windows,macos,linux,c++
