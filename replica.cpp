@@ -66,9 +66,11 @@ void Replica::propose() {
 void Replica::perform(Command command) {
     std::cout << "Replica performing " << command.serialize() << std::endl;
     // dummy result
+    slotOut++;
     Result result(command.getContent(), command.getAddress(), command.getPort());
     Response response(result);
     node->send_data(result.getAddress(), result.getPort(), response.serialize());
+
 }
 
 
@@ -79,26 +81,59 @@ void Replica::terminate() {
 
 int replica_test() {
     std::vector<std::pair<std::string, int> > leaders;
-    leaders.push_back(std::make_pair("127.0.0.1", 8010));
+    leaders.push_back(std::make_pair("127.0.0.1", 8000)); // leader's address and port, aka main thread's node
     Replica tmpReplica(8001, leaders);
     std::thread replicaThread([&tmpReplica]() {
         tmpReplica.run(nullptr);
         return nullptr;
     });
-    Node node(8011);
-    Request request(Command("com1", "127.0.0,1", 8010));
-    node.send_data("127.0.0.1", 8010, request.serialize());
+    Node node(8000);
+    std::cout << "sending request to replica" << std::endl;
+    Request request(Command("com1", "127.0.0.1", 8000));
+    node.send_data("127.0.0.1", 8001, request.serialize());
     struct sockaddr_in recvfrom;
+    std::cout << "expected propose from replica" << std::endl;
     Message* m = Message::deserialize(node.receive_data((struct sockaddr_in *)&recvfrom));
     Propose* p = dynamic_cast<Propose*>(m);
     assert(p != nullptr);
     std::cout << p->serialize() << std::endl;
+    assert(p->getSlot() == 0);
+    assert(p->getCommand().serialize().compare("com1|127.0.0.1|8000") == 0);
+    std::cout << "sending decision to replica" << std::endl;
+    Decision decision(0, Command("com2", "127.0.0.1", 8000));
+    node.send_data("127.0.0.1", 8001, decision.serialize());
+    std::cout << "expected response and proposal from replica" << std::endl;
+    Response* r = nullptr;
+    p = nullptr;
+    m = Message::deserialize(node.receive_data((struct sockaddr_in *)&recvfrom));
+    if (dynamic_cast<Response*>(m) != nullptr) {
+        r = dynamic_cast<Response*>(m);
+    } else if (dynamic_cast<Propose*>(m) != nullptr) {
+        p = dynamic_cast<Propose*>(m);
+    }
+    m = nullptr;
+    m = Message::deserialize(node.receive_data((struct sockaddr_in *)&recvfrom));
+    if (dynamic_cast<Response*>(m) != nullptr) {
+        r = dynamic_cast<Response*>(m);
+    } else if (dynamic_cast<Propose*>(m) != nullptr) {
+        p = dynamic_cast<Propose*>(m);
+    }
+    assert(r != nullptr);
+    assert(p != nullptr);
+    assert(r->getResult().serialize().compare("com2|127.0.0.1|8000") == 0);
+    assert(p->getSlot() == 1);
+    assert(p->getCommand().serialize().compare("com1|127.0.0.1|8000") == 0);
+    std::cout << "test passed" << std::endl;
     return 0;
 }
 
 int main(int argc, char* argv[]) {
     // 0      1      
     // server [port]
+    if (argc == 1) {
+        std::cout << "Run test" << std::endl;
+        replica_test();
+    }
     if(argc != 2) {
         std::cout << "Invalid arguments count. Should enter server [port]" << std::endl;
         exit(1);
