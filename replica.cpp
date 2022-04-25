@@ -114,6 +114,7 @@ int main(int argc, char* argv[]) {
         return nullptr;
     });
 
+    replicaThread.join();
     return 0;
 }
 
