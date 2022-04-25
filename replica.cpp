@@ -15,6 +15,10 @@ Replica::Replica(int port, std::vector<std::pair<std::string, int> > leaders) {
     slotOut = 0;
 }
 
+Replica::~Replica() {
+    delete node;
+}
+
 void Replica::run(void* arg) {
     while (!shouldTerminate) {
         Message* m = Message::deserialize(node->receive_data((struct sockaddr_in *)&recvfrom));

@@ -4,10 +4,14 @@
 #include "message.h"
 #include <cassert>
 
+Command::Command() {};
 Command::Command(std::string str, std::string address, int port) {
-    source = std::make_pair(address, port);
     this->content = str;
-}
+    source = std::make_pair(address, port);
+};
+bool Command::operator < (const Command& other) const {
+    return content < other.content;
+};
 std::string Command::serialize() {
     return content + "|" + source.first + "|" + std::to_string(source.second);
 };
