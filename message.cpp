@@ -59,10 +59,16 @@ Request::Request(Command command) : command(command) {};
 std::string Request::serialize() {
     return "Request(" + command.serialize() + ")";
 };
+Command Request::getCommand() {
+    return command;
+};
 
 Response::Response(Result result) : result(result) {};
 std::string Response::serialize() {
     return "Response(" + result.serialize() + ")";
+};
+Result Response::getResult() {
+    return result;
 };
 
 Propose::Propose(int slot, Command command) : slot(slot), command(command) {};
@@ -72,6 +78,9 @@ std::string Propose::serialize() {
 int Propose::getSlot() {
     return slot;
 };
+Command Propose::getCommand() {
+    return command;
+};
 
 Accept::Accept(int slot, Command command) : slot(slot), command(command) {};
 std::string Accept::serialize() {
@@ -79,6 +88,9 @@ std::string Accept::serialize() {
 };
 int Accept::getSlot() {
     return slot;
+};
+Command Accept::getCommand() {
+    return command;
 };
 
 
@@ -89,6 +101,9 @@ std::string Accepted::serialize() {
 int Accepted::getSlot() {
     return slot;
 };
+Command Accepted::getCommand() {
+    return command;
+};
 
 Decision::Decision(int slot, Command command) : slot(slot), command(command) {};
 std::string Decision::serialize() {
@@ -96,6 +111,9 @@ std::string Decision::serialize() {
 }
 int Decision::getSlot() {
     return slot;
+};
+Command Decision::getCommand() {
+    return command;
 };
 
 

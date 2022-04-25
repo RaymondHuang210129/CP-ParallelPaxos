@@ -27,6 +27,11 @@ void Acceptor::run(void* arg) {
     return;
 }
 
+void Acceptor::terminate() {
+    shouldTerminate = true;
+    return;
+}
+
 int main() {
     Acceptor tmpAcceptor(8000);
     std::thread acceptorThread([&tmpAcceptor]() {
