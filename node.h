@@ -5,7 +5,7 @@
 #include <sys/socket.h> //socket
 #include <arpa/inet.h> //inet_addr
 #include <netdb.h> //hostent
-#include <bits/stdc++.h> // STL vector
+#include <vector> // STL vector
 #define MAX_BUF_SIZE 100
 using namespace std;
 
