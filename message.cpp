@@ -110,7 +110,16 @@ Message* Message::deserialize(std::string serialized) {
         Decision* decision = new Decision(slot, *command);
         delete command;
         return decision;
+    } else if (serialized.substr(0, 7) == "Assign(") {
+        std::string content = serialized.substr(7, serialized.length() - 8);
+        int commaPosition = content.find(",");
+        int slot = std::stoi(content.substr(0, commaPosition));
+        Command* command = Command::deserialize(content.substr(commaPosition + 1, content.length() - commaPosition - 1));
+        Assign* assign = new Assign(slot, *command);
+        delete command;
+        return assign;
     } else {
+        std::cout << "unrecognized serialized" << std::endl;
         return new Message();
     }
 };
