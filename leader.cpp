@@ -49,11 +49,13 @@ int main(int argc, char *argv[]) {
         std::cout << "Invalid arguments count. Should enter server [port] [number of commander]\n " << std::endl;
         exit(1);
     }
-
     int numOfCommander = atoi(argv[2]);
+    //std::thread* commanderThread = new std::thread[numOfCommander];
+    std::vector<std::thread*> commanderThreads;
+
     for(int i = 1; i<=numOfCommander; ++i){
         int port = i+atoi(argv[1]);
-        std::thread acceptorThread([port]() {
+        std::thread* commanderThread = new std::thread([port]() {
             std::vector<std::pair<std::string, int> > replicas;
             std::vector<std::pair<std::string, int> > leaders;
             std::vector<std::pair<std::string, int> > acceptors;
@@ -62,13 +64,27 @@ int main(int argc, char *argv[]) {
             commander.run(nullptr);
             return nullptr;
         });
+
+        // std::thread commanderThread([port]() {
+        //     std::vector<std::pair<std::string, int> > replicas;
+        //     std::vector<std::pair<std::string, int> > leaders;
+        //     std::vector<std::pair<std::string, int> > acceptors;
+        //     read_config(replicas, leaders, acceptors);
+        //     Commander commander(port, replicas, acceptors);
+        //     commander.run(nullptr);
+        //     return nullptr;
+        // });
+        commanderThreads.push_back(commanderThread);
     }
 
     Leader leader(atoi(argv[1]), atoi(argv[2]));
-    std::thread acceptorThread([&leader]() {
+    std::thread leaderThread([&leader]() {
         leader.run(nullptr);
         return nullptr;
     });
-
+    for(int i = 0; i < numOfCommander; ++i){
+        commanderThreads.at(i)->join();
+    }
+    leaderThread.join();
     return 0;
 }
