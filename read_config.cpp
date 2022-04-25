@@ -17,14 +17,14 @@ void read_config(std::vector<std::pair<std::string, int> > &replicas, std::vecto
         int pos = tmp.find(delimiter);
         std::string address = tmp.substr(0, pos);
         std::string port = tmp.substr(pos+1, tmp.length());
-        replicas.push_back(std::make_pair(address, stoi(port)));
+        leaders.push_back(std::make_pair(address, stoi(port)));
     }
     while (getline(config,tmp)){ // process acceptors
         std::string delimiter = " ";
         int pos = tmp.find(delimiter);
         std::string address = tmp.substr(0, pos);
         std::string port = tmp.substr(pos+1, tmp.length());
-        replicas.push_back(std::make_pair(address, stoi(port)));
+        acceptors.push_back(std::make_pair(address, stoi(port)));
     }
     config.close();
 }
