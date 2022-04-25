@@ -23,7 +23,7 @@ class Replica {
         void propose();
         void perform(Command);
     public:
-        Replica(int port, std::vector<std::pair<std::string, int>> leaders);
+        Replica(int port, std::vector<std::pair<std::string, int> > leaders);
         void run(void* arg);
         void terminate();
 };

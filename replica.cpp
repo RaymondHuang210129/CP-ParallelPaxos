@@ -6,7 +6,7 @@
 #include <thread>
 #include <cassert>
 
-Replica::Replica(int port, std::vector<std::pair<std::string, int>> leaders) {
+Replica::Replica(int port, std::vector<std::pair<std::string, int> > leaders) {
     node = new Node(port);
     memset(&recvfrom, 0, sizeof(recvfrom));
     this->leaders = leaders;
@@ -99,9 +99,9 @@ int main(int argc, char* argv[]) {
         std::cout << "Invalid arguments count. Should enter server [port]" << std::endl;
         exit(1);
     }
-    std::vector<std::pair<std::string, int>> replicas;
-    std::vector<std::pair<std::string, int>> leaders;
-    std::vector<std::pair<std::string, int>> acceptors;
+    std::vector<std::pair<std::string, int> > replicas;
+    std::vector<std::pair<std::string, int> > leaders;
+    std::vector<std::pair<std::string, int> > acceptors;
     read_config(replicas, leaders, acceptors);
 
     std::thread replicaThread([&replicas, &argv, &leaders]() {
