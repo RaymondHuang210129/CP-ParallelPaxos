@@ -46,7 +46,7 @@ int main(int argc, char *argv[]) {
     // 0      1      2
     // server [port] [number of commander]
     if(argc != 3) {
-        std::cout << "Invalid arguments count. Should enter server [port] []\n " << std::endl;
+        std::cout << "Invalid arguments count. Should enter server [port] [number of commander]\n " << std::endl;
         exit(1);
     }
 

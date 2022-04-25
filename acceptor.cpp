@@ -32,23 +32,17 @@ void Acceptor::terminate() {
     return;
 }
 
-int acceptor_test() {
-    Acceptor tmpAcceptor(8000);
+int main(int argc, char *argv[]) {
+    // 0      1     
+    // server [port]
+    if(argc != 2) {
+        std::cout << "Invalid arguments count. Should enter server [port] \n " << std::endl;
+        exit(1);
+    }
+    Acceptor tmpAcceptor(atoi(argv[1]));
     std::thread acceptorThread([&tmpAcceptor]() {
         tmpAcceptor.run(nullptr);
         return nullptr;
     });
-    Node node(8001);
-    Accept accept(1, Command("com", "address", 123));
-    node.send_data("127.0.0.1", 8000, accept.serialize());
-    struct sockaddr_in recvfrom;
-    Message* m = Message::deserialize(node.receive_data((struct sockaddr_in *)&recvfrom));
-    Accepted* accepted = dynamic_cast<Accepted*>(m);
-    assert(accepted != nullptr);
-    assert(accepted->getSlot() == accept.getSlot());
-    assert((int)(accepted->getCommand().serialize() == accept.getCommand().serialize()));
-    tmpAcceptor.terminate();
-    node.send_data("127.0.0.1", 8000, accept.serialize());
-    acceptorThread.join();
     return 0;
 }

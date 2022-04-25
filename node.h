@@ -15,7 +15,6 @@
 */
 #ifndef NODE_H
 #define NODE_H
-#endif
 class Node
 {
     private:
@@ -30,3 +29,5 @@ class Node
 };
 void read_config(std::vector<std::pair<std::string, int> > &replicas, std::vector<std::pair<std::string, int> > &leaders,
                 std::vector<std::pair<std::string, int> > &acceptors);
+
+#endif
