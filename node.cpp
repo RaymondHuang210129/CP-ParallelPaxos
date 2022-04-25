@@ -61,8 +61,10 @@ struct sockaddr_in Node::setDest(std::string address, int port){
 /*
     Send data to a receiver
 */
-bool Node::send_data(sockaddr_in* receiver, std::string data){	
-    std::cout<<"Sending data...";
+bool Node::send_data(sockaddr_in* receiver, std::string data){
+	char tmp[20];
+	inet_ntop(AF_INET, &(receiver->sin_addr), tmp, INET_ADDRSTRLEN);
+    std::cout<<"Sending data to "<<tmp<<":"<<htons(receiver->sin_port)<<"...\n";
     std::cout<<data;
     std::cout<<"\n";
     
