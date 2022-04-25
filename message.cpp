@@ -210,12 +210,14 @@ int message_test() {
     Accept accept(slot1, command1);
     Accepted accepted(slot1, command1);
     Decision decision(slot1, command1);
+    Assign assign(slot1, command1);
     std::cout << request.serialize() << std::endl;
     std::cout << response.serialize() << std::endl;
     std::cout << propose.serialize() << std::endl;
     std::cout << accept.serialize() << std::endl;
     std::cout << accepted.serialize() << std::endl;
     std::cout << decision.serialize() << std::endl;
+    std::cout << assign.serialize() << std::endl;
 
     Message* message = Message::deserialize(request.serialize());
     assert(message != nullptr);
@@ -252,12 +254,18 @@ int message_test() {
     Decision* decision2 = dynamic_cast<Decision*>(message);
     assert(decision2 != nullptr);
 
+    message = Message::deserialize(assign.serialize());
+    assert(message != nullptr);
+    Assign* assign2 = dynamic_cast<Assign*>(message);
+    assert(assign2 != nullptr);
+
     std::cout << request2->serialize() << std::endl;
     std::cout << response2->serialize() << std::endl;
     std::cout << propose2->serialize() << std::endl;
     std::cout << accept2->serialize() << std::endl;
     std::cout << accepted2->serialize() << std::endl;
     std::cout << decision2->serialize() << std::endl;
+    std::cout << assign2->serialize() << std::endl;
 
     assert(request2->serialize() == request.serialize());
     assert(response2->serialize() == response.serialize());
@@ -265,6 +273,7 @@ int message_test() {
     assert(accept2->serialize() == accept.serialize());
     assert(accepted2->serialize() == accepted.serialize());
     assert(decision2->serialize() == decision.serialize());
+    assert(assign2->serialize() == assign.serialize());
 
     return 0;
 }
