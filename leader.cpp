@@ -49,10 +49,6 @@ int main(int argc, char *argv[]) {
         std::cout << "Invalid arguments count. Should enter server [port] []\n " << std::endl;
         exit(1);
     }
-    std::vector<std::pair<std::string, int> > replicas;
-    std::vector<std::pair<std::string, int> > leaders;
-    std::vector<std::pair<std::string, int> > acceptors;
-    read_config(replicas, leaders, acceptors);
 
     int numOfCommander = atoi(argv[2]);
     for(int i = 1; i<=numOfCommander; ++i){
