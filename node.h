@@ -13,6 +13,8 @@
 /*
     UDP Client class
 */
+#ifndef NODE_H
+#define NODE_H
 class Node
 {
     private:
@@ -22,11 +24,11 @@ class Node
         struct sockaddr_in setDest(std::string, int);
         bool send_data(sockaddr_in*, std::string);
 		bool send_data(std::string, int, std::string);
-		bool broadcast_data(std::vector<std::string>&, int, std::string);
+		bool broadcast_data(std::vector<std::pair<std::string, int>>&, std::string);
         std::string receive_data(sockaddr_in*);
 };
 
-void read_config(std::vector<std::pair<std::string, int> > &replicas, std::vector<std::pair<std::string, int> > &leaders, 
+void read_config(std::vector<std::pair<std::string, int> > &replicas, std::vector<std::pair<std::string, int> > &leaders,
                 std::vector<std::pair<std::string, int> > &acceptors){
     std::ifstream config;
     config.open("config.txt");

@@ -9,7 +9,7 @@ class Commander {
         Node* node;
         struct sockaddr_in recvfrom;
         bool shouldTerminate;
-        std::unordered_map<std::string, std::unordered_set<std::string>> waitFor;
+        std::unordered_map<std::string, std::unordered_set<std::string> > waitFor;
         std::vector<std::pair<std::string, int>> acceptors;
         std::vector<std::pair<std::string, int>> replicas;
 

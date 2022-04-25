@@ -7,6 +7,7 @@
 #include <functional>
 #include <thread>
 #include <cassert>
+#include <unordered_set>
 
 #include <fstream>
 #include <utility>
