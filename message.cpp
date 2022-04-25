@@ -185,7 +185,7 @@ Command Assign::getCommand() {
 
 
 
-int main() {
+int message_test() {
 
     int slot1 = 1;
     std::string str1 = "com";
