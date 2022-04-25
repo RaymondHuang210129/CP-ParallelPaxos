@@ -18,6 +18,7 @@ Commander::Commander(int port, std::vector<std::pair<std::string, int> > replica
     this->acceptors = acceptors;
     this->replicas = replicas;
     memset(&recvfrom, 0, sizeof(recvfrom));
+	shouldTerminate = false;
 };
 
 Commander::~Commander(){
@@ -37,9 +38,10 @@ void Commander::run(void* arg) {
             Assign tmpAssign(accepted->getSlot(), accepted->getCommand());
             if(waitFor.count(tmpAssign.serialize()) != 0){
                 std::string ip = inet_ntoa(recvfrom.sin_addr);
+				std::string port = std::to_string(htons(recvfrom.sin_port));
                 // now get it back and print it
-                waitFor[tmpAssign.serialize()].insert(ip);
-                if(waitFor[tmpAssign.serialize()].size() > ((acceptors.size()/2)+1)){
+                waitFor[tmpAssign.serialize()].insert(ip+port);				
+                if(waitFor[tmpAssign.serialize()].size() >= ((acceptors.size()/2)+1)){
                     Decision decision(accepted->getSlot(), accepted->getCommand());
                     node->broadcast_data(replicas, decision.serialize());
                     waitFor.erase(tmpAssign.serialize());

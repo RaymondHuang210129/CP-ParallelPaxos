@@ -73,10 +73,8 @@ bool Node::send_data(sockaddr_in* receiver, std::string data){
         perror("Send failed : ");
         return false;
     }
-    
-    std::cout<<"Data sent\n";
-
-    return true;
+	
+	return true;
 }
 
 /*
