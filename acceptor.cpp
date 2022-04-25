@@ -32,7 +32,7 @@ void Acceptor::terminate() {
     return;
 }
 
-int main() {
+int acceptor_test() {
     Acceptor tmpAcceptor(8000);
     std::thread acceptorThread([&tmpAcceptor]() {
         tmpAcceptor.run(nullptr);
