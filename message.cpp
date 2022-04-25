@@ -116,6 +116,17 @@ Command Decision::getCommand() {
     return command;
 };
 
+Assign::Assign(int slot, Command command) : slot(slot), command(command) {};
+std::string Assign::serialize() {
+    return "Assign(" + std::to_string(slot) + "," + command.serialize() + ")";
+}
+int Assign::getSlot() {
+    return slot;
+};
+Command Assign::getCommand() {
+    return command;
+};
+
 
 
 int message_test() {
