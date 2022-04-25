@@ -9,6 +9,10 @@ Client::Client(int port){
     memset(&recvfrom, 0, sizeof(recvfrom));
 };
 
+Client::~Client(){
+    delete node;
+};
+
 void Client::send(string address, int port, string req){
     Request request(req);
     node->send_data(address, port, request.serialize());
@@ -22,11 +26,12 @@ void Client::send(string address, int port, string req){
     } else{
         std::cerr << "Not receiving Result message" << std::endl;
     }
+	delete m;
     return;
 };
 
 
-int main(int argc, char *argv[]) {
+int client_test(int argc, char *argv[]) {
     // 0      1         2
     // server server-ip port
     if(argc != 3){

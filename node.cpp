@@ -88,6 +88,20 @@ bool Node::send_data(string address, int port, string data){
 }
 
 /*
+    Send data to list of ip(s) & port
+*/
+bool Node::broadcast_data(vector<string>& addresses, int port, string data){
+	for (int i = 0; i < addresses.size(); i++){
+		struct sockaddr_in receiver;
+		receiver = setDest(addresses[i], port);
+
+		if(!send_data(&receiver, data))
+			return false;
+	}
+	return true;
+}
+
+/*
     Receive data from the connected host
 */
 string Node::receive_data(sockaddr_in* sender){
@@ -97,7 +111,7 @@ string Node::receive_data(sockaddr_in* sender){
     //Receive a reply from the receiver
 	socklen_t sender_length = (socklen_t)sizeof(struct sockaddr);
     if(recvfrom(sock, buffer, sizeof(buffer), 0, (sockaddr*)&sender, &sender_length) < 0){
-        puts("recv failed");
+        perror("Receive failed : ");
         return NULL;
     }
 

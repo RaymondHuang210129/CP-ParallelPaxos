@@ -7,6 +7,7 @@ class Client {
 
     public:
         Client(int port);
+		~Client();
         void send(string address, int port, string req);
         void recv();
 };
