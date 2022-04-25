@@ -22,6 +22,7 @@ void Acceptor::run(void* arg) {
             Accepted accepted(accept->getSlot(), accept->getCommand());
             node->send_data((struct sockaddr_in *)&recvfrom, accepted.serialize());
         }
+        delete m;
     }
     return;
 }
