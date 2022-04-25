@@ -15,7 +15,7 @@ class Client {
 		~Client();
         void send(std::string req);
         Result recv();
-		void run(char*, int);
+		void run();
 		bool isTerminate();
 };
 #endif
