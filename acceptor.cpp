@@ -5,6 +5,7 @@
 #include <pthread.h>
 #include <functional>
 #include <thread>
+#include <cassert>
 
 
 Acceptor::Acceptor(int port) {
