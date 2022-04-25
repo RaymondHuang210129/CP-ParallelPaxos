@@ -44,7 +44,6 @@ Result Client::recv(){
 void Client::run(){
 	while(isTerminate()){
 		send(request->serialize());
-		
 		while(request->getCommand().serialize() != recv().serialize()){
 			std::cout << "Mismatch rspd" << std::endl;
 		}
@@ -53,7 +52,7 @@ void Client::run(){
 
 bool Client::isTerminate() {
 	++recv_count;
-	return (recv_count == CLIENT_RECV_MAX);
+	return (recv_count != CLIENT_RECV_MAX);
 }
 
 int main(int argc, char *argv[]) {
@@ -61,8 +60,7 @@ int main(int argc, char *argv[]) {
         std::cout << "Invalid arguments count. Should enter [cleint-port] \n " << std::endl;
         exit(1);
     }
-
-    Client tmpClient(atoi(argv[2]));
+    Client tmpClient(atoi(argv[1]));
 	std::thread clientThread([&tmpClient]() {
 		tmpClient.run();
 		return nullptr;
