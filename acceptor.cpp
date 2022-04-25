@@ -39,7 +39,7 @@ int acceptor_test() {
         return nullptr;
     });
     Node node(8001);
-    Accept accept(1, Command("com"));
+    Accept accept(1, Command("com", "address", 123));
     node.send_data("127.0.0.1", 8000, accept.serialize());
     struct sockaddr_in recvfrom;
     Message* m = Message::deserialize(node.receive_data((struct sockaddr_in *)&recvfrom));
