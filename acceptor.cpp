@@ -44,5 +44,7 @@ int main(int argc, char *argv[]) {
         tmpAcceptor.run(nullptr);
         return nullptr;
     });
+
+    acceptorThread.join();
     return 0;
 }
