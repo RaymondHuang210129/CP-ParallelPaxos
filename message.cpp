@@ -4,14 +4,34 @@
 #include "message.h"
 #include <cassert>
 
-Command::Command(std::string str) : str(str) {}
+Command::Command(std::string str, std::string address, int port) {
+    source = std::make_pair(address, port);
+    this->str = str;
+}
 std::string Command::serialize() {
-    return str;
+    return str + "|" + source.first + "|" + std::to_string(source.second);
+};
+Command* Command::deserialize(std::string serialized) {
+    std::string str = serialized.substr(0, serialized.find("|"));
+    std::string remainStr = serialized.substr(serialized.find("|") + 1);
+    std::string address = remainStr.substr(0, remainStr.find("|"));
+    int port = std::stoi(remainStr.substr(remainStr.find("|") + 1));
+    return new Command(str, address, port);
 };
 
-Result::Result(std::string str) : str(str) {}
+Result::Result(std::string str, std::string address, int port){
+    source = std::make_pair(address, port);
+    this->str = str;
+}
 std::string Result::serialize() {
-    return str;
+    return str + "|" + source.first + "|" + std::to_string(source.second);
+};
+Result* Result::deserialize(std::string serialized) {
+    std::string str = serialized.substr(0, serialized.find("|"));
+    std::string remainStr = serialized.substr(serialized.find("|") + 1);
+    std::string address = remainStr.substr(0, remainStr.find("|"));
+    int port = std::stoi(remainStr.substr(remainStr.find("|") + 1));
+    return new Result(str, address, port);
 };
 
 Message::Message() {};
@@ -20,36 +40,48 @@ Message::~Message() {};
 Message* Message::deserialize(std::string serialized) {
     if (serialized.substr(0, 8) == "Request(") {
         std::string content = serialized.substr(8, serialized.length() - 9);
-        Command command(content);
-        return new Request(command);
+        Command* command = Command::deserialize(content);
+        Request* request = new Request(*command);
+        delete command;
+        return request;
     } else if (serialized.substr(0, 9) == "Response(") {
         std::string content = serialized.substr(9, serialized.length() - 10);
-        Result result(content);
-        return new Response(result);
+        Result* result = Result::deserialize(content);
+        Response* response = new Response(*result);
+        delete result;
+        return response;
     } else if (serialized.substr(0, 8) == "Propose(") {
         std::string content = serialized.substr(8, serialized.length() - 9);
         int commaPosition = content.find(",");
         int slot = std::stoi(content.substr(0, commaPosition));
-        std::string command = content.substr(commaPosition + 1, content.length() - commaPosition - 1);
-        return new Propose(slot, command);
+        Command* command = Command::deserialize(content.substr(commaPosition + 1, content.length() - commaPosition - 1));
+        Propose* propose = new Propose(slot, *command);
+        delete command;
+        return propose;
     } else if (serialized.substr(0, 7) == "Accept(") {
         std::string content = serialized.substr(7, serialized.length() - 8);
         int commaPosition = content.find(",");
         int slot = std::stoi(content.substr(0, commaPosition));
-        std::string command = content.substr(commaPosition + 1, content.length() - commaPosition - 1);
-        return new Accept(slot, command);
+        Command* command = Command::deserialize(content.substr(commaPosition + 1, content.length() - commaPosition - 1));
+        Accept* accept = new Accept(slot, *command);
+        delete command;
+        return accept;
     } else if (serialized.substr(0, 9) == "Accepted(") {
         std::string content = serialized.substr(9, serialized.length() - 10);
         int commaPosition = content.find(",");
         int slot = std::stoi(content.substr(0, commaPosition));
-        std::string command = content.substr(commaPosition + 1, content.length() - commaPosition - 1);
-        return new Accepted(slot, command);
+        Command* command = Command::deserialize(content.substr(commaPosition + 1, content.length() - commaPosition - 1));
+        Accepted* accepted = new Accepted(slot, *command);
+        delete command;
+        return accepted;
     } else if (serialized.substr(0, 9) == "Decision(") {
         std::string content = serialized.substr(9, serialized.length() - 10);
         int commaPosition = content.find(",");
         int slot = std::stoi(content.substr(0, commaPosition));
-        std::string command = content.substr(commaPosition + 1, content.length() - commaPosition - 1);
-        return new Decision(slot, command);
+        Command* command = Command::deserialize(content.substr(commaPosition + 1, content.length() - commaPosition - 1));
+        Decision* decision = new Decision(slot, *command);
+        delete command;
+        return decision;
     } else {
         return new Message();
     }
@@ -129,12 +161,12 @@ Command Assign::getCommand() {
 
 
 
-int message_test() {
+int main() {
 
     int slot1 = 1;
     std::string str1 = "com";
-    Command command1(str1);
-    Result result1(str1);
+    Command command1(str1, "address", 123);
+    Result result1(str1, "address", 123);
     Request request(command1);
     Response response(result1);
     Propose propose(slot1, command1);

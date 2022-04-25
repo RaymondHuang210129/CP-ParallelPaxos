@@ -6,7 +6,7 @@
 
 Client::Client(int port){
     node = new Node(port);
-	request = new Request(Command("com"));
+	request = new Request(Command("com", "address", 123));
     memset(&recvfrom, 0, sizeof(recvfrom));
 	shouldTerminate = false;
 };
@@ -63,7 +63,7 @@ int client_test(int argc, char *argv[]) {
 	});
 	
 	char c;
-	Response resp(Result("com"));
+	Response resp(Result("com", "address", 123));
 	Node node(atoi(argv[2]));
 	while(1){
 		struct sockaddr_in recvfrom;

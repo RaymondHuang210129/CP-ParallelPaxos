@@ -3,17 +3,21 @@
 class Command {
 private:
     std::string str;
+    std::pair<std::string, int> source;
 public:
-    Command(std::string str);
+    Command(std::string str, std::string address, int port);
     std::string serialize();
+    static Command* deserialize(std::string serialized);
 };
 
 class Result {
 private:
     std::string str;
+    std::pair<std::string, int> source;
 public:
-    Result(std::string str);
+    Result(std::string str, std::string address, int port);
     std::string serialize();
+    static Result* deserialize(std::string serialized);
 };
 
 class Message {
