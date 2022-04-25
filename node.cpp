@@ -72,7 +72,7 @@ bool Node::send_data(sockaddr_in* receiver, std::string data){
         return false;
     }
     
-    std::cout<<"Data send\n";
+    std::cout<<"Data sent\n";
 
     return true;
 }

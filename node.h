@@ -11,6 +11,8 @@
 /*
     UDP Client class
 */
+#ifndef NODE_H
+#define NODE_H
 class Node
 {
     private:
@@ -23,3 +25,4 @@ class Node
 		bool broadcast_data(std::vector<std::string>&, int, std::string);
         std::string receive_data(sockaddr_in*);
 };
+#endif
