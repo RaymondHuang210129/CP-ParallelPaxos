@@ -7,7 +7,6 @@
 #include <netdb.h> //hostent
 #include <vector> // STL vector
 #define MAX_BUF_SIZE 100
-using namespace std;
 
 /*
     UDP Client class
@@ -18,9 +17,9 @@ class Node
         int sock;
     public:
         Node(int);
-        struct sockaddr_in setDest(string, int);
-        bool send_data(sockaddr_in*, string);
-		bool send_data(string, int, string);
-		bool broadcast_data(vector<string>&, int, string);
-        string receive_data(sockaddr_in*);
+        struct sockaddr_in setDest(std::string, int);
+        bool send_data(sockaddr_in*, std::string);
+		bool send_data(std::string, int, std::string);
+		bool broadcast_data(std::vector<std::string>&, int, std::string);
+        std::string receive_data(sockaddr_in*);
 };

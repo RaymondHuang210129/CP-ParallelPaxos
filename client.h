@@ -8,6 +8,6 @@ class Client {
     public:
         Client(int port);
 		~Client();
-        void send(string address, int port, string req);
+        void send(std::string address, int port, std::string req);
         void recv();
 };

@@ -8,7 +8,7 @@ Node::Node(int port)
 	if (sock == -1){
 		perror("Could not create socket");
 	}
-	cout<<"Socket created\n";
+	std::cout<<"Socket created\n";
 	
 	struct sockaddr_in server_addr;
 	server_addr.sin_family = AF_INET;
@@ -22,7 +22,7 @@ Node::Node(int port)
 /*
     Set receiver
 */
-struct sockaddr_in Node::setDest(string address, int port){
+struct sockaddr_in Node::setDest(std::string address, int port){
     // setup address structure
     /*if(inet_addr(address.c_str()) == -1){
         struct hostent *he;
@@ -61,10 +61,10 @@ struct sockaddr_in Node::setDest(string address, int port){
 /*
     Send data to a receiver
 */
-bool Node::send_data(sockaddr_in* receiver, string data){	
-    cout<<"Sending data...";
-    cout<<data;
-    cout<<"\n";
+bool Node::send_data(sockaddr_in* receiver, std::string data){	
+    std::cout<<"Sending data...";
+    std::cout<<data;
+    std::cout<<"\n";
     
     // Send some data
     if(sendto(sock, data.c_str(), strlen(data.c_str()), 0, (struct sockaddr *)receiver, (socklen_t)sizeof(struct sockaddr)) < 0){
@@ -72,7 +72,7 @@ bool Node::send_data(sockaddr_in* receiver, string data){
         return false;
     }
     
-    cout<<"Data send\n";
+    std::cout<<"Data send\n";
 
     return true;
 }
@@ -80,7 +80,7 @@ bool Node::send_data(sockaddr_in* receiver, string data){
 /*
     Send data to a ip & port
 */
-bool Node::send_data(string address, int port, string data){
+bool Node::send_data(std::string address, int port, std::string data){
 	struct sockaddr_in receiver;
 	receiver = setDest(address, port);
 
@@ -90,7 +90,7 @@ bool Node::send_data(string address, int port, string data){
 /*
     Send data to list of ip(s) & port
 */
-bool Node::broadcast_data(vector<string>& addresses, int port, string data){
+bool Node::broadcast_data(std::vector<std::string>& addresses, int port, std::string data){
 	for (int i = 0; i < addresses.size(); i++){
 		struct sockaddr_in receiver;
 		receiver = setDest(addresses[i], port);
@@ -104,9 +104,9 @@ bool Node::broadcast_data(vector<string>& addresses, int port, string data){
 /*
     Receive data from the connected host
 */
-string Node::receive_data(sockaddr_in* sender){
+std::string Node::receive_data(sockaddr_in* sender){
     char buffer[MAX_BUF_SIZE];
-    string reply;
+    std::string reply;
 
     //Receive a reply from the receiver
 	socklen_t sender_length = (socklen_t)sizeof(struct sockaddr);
@@ -123,19 +123,19 @@ string Node::receive_data(sockaddr_in* sender){
 int node_test(int argc, char *argv[])
 {
     Node c(51651);
-    string host;
+    std::string host;
 
-    cout<<"Enter hostname : ";
-    cin>>host;
+    std::cout<<"Enter hostname : ";
+    std::cin>>host;
 
     //send some data
     c.send_data(host, 80,"GET / HTTP/1.1\r\n\r\n");
 
     //receive and echo reply
 	struct sockaddr_in sender;
-    cout<<"----------------------------\n\n";
-    cout<<c.receive_data(&sender);
-    cout<<"\n\n----------------------------\n\n";
+    std::cout<<"----------------------------\n\n";
+    std::cout<<c.receive_data(&sender);
+    std::cout<<"\n\n----------------------------\n\n";
 
     //done
     return 0;
