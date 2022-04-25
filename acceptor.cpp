@@ -2,7 +2,6 @@
 #include <iostream>
 #include "message.h"
 #include "acceptor.h"
-#include <pthread.h>
 #include <functional>
 #include <thread>
 #include <cassert>
