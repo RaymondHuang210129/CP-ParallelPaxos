@@ -74,20 +74,3 @@ void read_config(std::vector<Entry> &replicas, std::vector<Entry> &leaders,
         leaders.push_back(Entry(hostAddress, hostPort, threadStartPort, numThreads));
     }
 }
-
-int main() {
-    std::vector<Entry> replicas;
-    std::vector<Entry> leaders;
-    std::vector<Entry> acceptors;
-    read_config(replicas, leaders, acceptors);
-    for (int i = 0; i < replicas.size(); i++) {
-        std::cout << replicas[i].address << " " << replicas[i].hostPort << " " << replicas[i].threadStartPort << " " << replicas[i].numThreads << std::endl;
-    }
-    for (int i = 0; i < leaders.size(); i++) {
-        std::cout << leaders[i].address << " " << leaders[i].hostPort << " " << leaders[i].threadStartPort << " " << leaders[i].numThreads << std::endl;
-    }
-    for (int i = 0; i < acceptors.size(); i++) {
-        std::cout << acceptors[i].address << " " << acceptors[i].hostPort << " " << acceptors[i].threadStartPort << " " << acceptors[i].numThreads << std::endl;
-    }
-    return 0;
-}
