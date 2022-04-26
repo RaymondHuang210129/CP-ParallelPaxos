@@ -135,7 +135,7 @@ int main(int argc, char* argv[]) {
         replica_test();
     }
     if(argc != 3) {
-        std::cout << "Invalid arguments count. Should enter server [port]" << std::endl;
+        std::cout << "Invalid arguments count. Should enter server [address] [port]" << std::endl;
         exit(1);
     }
     std::vector<Entry> replicas;
