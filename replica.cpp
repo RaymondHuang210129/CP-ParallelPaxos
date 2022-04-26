@@ -1,4 +1,5 @@
 #include <string>
+#include <unordered_map>
 #include <iostream>
 #include "message.h"
 #include "replica.h"
@@ -41,10 +42,16 @@ void Replica::run(void* arg) {
         Request* request = dynamic_cast<Request*>(m);
         Decision* decision = dynamic_cast<Decision*>(m);
         if (request != nullptr) {
+            if (std::hash<std::string>{}(request->serialize()) % numThreads != threadId) {
+                return;
+            }
             std::cout << "Replica received Request message " << request->serialize() << std::endl;
             requests.insert(request->getCommand());
             propose();
         } else if (decision != nullptr) {
+            if (decision->getSlot() % numThreads != threadId) {
+                return;
+            }
             std::cout << "Replica received Decision message " << decision->serialize() << std::endl;
             decisions[decision->getSlot()] = decision->getCommand();
             while (decisions.find(slotOut) != decisions.end()) {
