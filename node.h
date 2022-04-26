@@ -19,6 +19,7 @@ class Node
 {
     private:
         int sock;
+		int port;
     public:
         Node(int);
         struct sockaddr_in setDest(std::string, int);
@@ -26,6 +27,7 @@ class Node
 		bool send_data(std::string, int, std::string);
 		bool broadcast_data(std::vector<std::pair<std::string, int>>&, std::string);
         std::string receive_data(sockaddr_in*);
+		int getPort();
 };
 void read_config(std::vector<std::pair<std::string, int> > &replicas, std::vector<std::pair<std::string, int> > &leaders,
                 std::vector<std::pair<std::string, int> > &acceptors);

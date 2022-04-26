@@ -2,21 +2,26 @@
 /*
     constructor
 */
-Node::Node(int port)
+Node::Node(int port_in)
 {
+	port = port_in;
 	sock = socket(AF_INET, SOCK_DGRAM, 0);
 	if (sock == -1){
 		perror("Could not create socket");
 	}
-	std::cout<<"Socket created\n";
+	std::cout<<"Socket created on: "<<port<<"\n";
 	
 	struct sockaddr_in server_addr;
 	server_addr.sin_family = AF_INET;
     server_addr.sin_addr.s_addr = INADDR_ANY;
-    server_addr.sin_port = htons(port);
+    server_addr.sin_port = htons(port_in);
 	if (bind(sock, (sockaddr*)&server_addr, sizeof(server_addr)) < (unsigned long)0){
         perror("bind");
     }
+}
+
+int Node::getPort(){
+	return port;
 }
 
 /*
@@ -65,9 +70,7 @@ bool Node::send_data(sockaddr_in* receiver, std::string data){
 	char tmp[20];
 	inet_ntop(AF_INET, &(receiver->sin_addr), tmp, INET_ADDRSTRLEN);
     std::cout<<"Sending " << data << " to "<<tmp<<":"<<htons(receiver->sin_port)<<"...\n";
-
-    std::cout<<"\n";
-    
+	
     // Send some data
     if(sendto(sock, data.c_str(), strlen(data.c_str()), 0, (struct sockaddr *)receiver, (socklen_t)sizeof(struct sockaddr)) < 0){
         perror("Send failed : ");

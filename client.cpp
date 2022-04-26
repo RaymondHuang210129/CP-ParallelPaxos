@@ -6,7 +6,6 @@
 #define CLIENT_RECV_MAX 100
 Client::Client(int port){
     node = new Node(port);
-	request = new Request(Command("com", "address", 123));
     memset(&recvfrom, 0, sizeof(recvfrom));
 	recv_count = 0;
 	
@@ -17,7 +16,6 @@ Client::Client(int port){
 
 Client::~Client(){
     delete node;
-	delete request;
 };
 
 void Client::send(std::string req){
@@ -31,7 +29,6 @@ Result Client::recv(){
     if (r != nullptr) {
 		Result rspd = r->getResult();
 		delete m;
-        std::cout << rspd.serialize() << std::endl;
 		return rspd;
     }
 	else {
@@ -43,10 +40,16 @@ Result Client::recv(){
 
 void Client::run(){
 	while(!needTerminate()){
-		send(request->serialize());
-		while(request->getCommand().serialize() != recv().serialize()){
+		std::string cmd = "cmd" + std::to_string(recv_count) + "@" + std::to_string(node->getPort());
+		Request request = Request(Command(cmd, "127.0.0.1", node->getPort()));
+		send(request.serialize());
+		
+		Result recv_result = recv();
+		while(request.getCommand().serialize() != recv_result.serialize()){
 			std::cout << "Mismatch command" << std::endl;
+			recv_result = recv();
 		}
+		std::cout << "Got result: "<<recv_result.serialize() << std::endl;
 	}
 };
 
@@ -56,16 +59,25 @@ bool Client::needTerminate() {
 }
 
 int main(int argc, char *argv[]) {
-    if(argc != 2){
-        std::cout << "Invalid arguments count. Should enter [cleint-port] \n " << std::endl;
+    if(argc != 3){
+        std::cout << "Invalid arguments count. Should enter [client-port] [client-thread-number]\n " << std::endl;
         exit(1);
     }
-    Client tmpClient(atoi(argv[1]));
-	std::thread clientThread([&tmpClient]() {
-		tmpClient.run();
-		return nullptr;
-	});
+	
+	int numOfClient = atoi(argv[2]);
+	std::vector<std::thread> clientThreads;
+	for(int i = 0; i<numOfClient; ++i){
+		int port = i+atoi(argv[1]);
+		
+		clientThreads.emplace_back([port]() {
+            Client tmpClient(port);
+            tmpClient.run();
+            return nullptr;
+        });
+	}
 
-	clientThread.join();
+	for(int i = 0; i < numOfClient; ++i){
+        clientThreads.at(i).join();
+    }
     return 0;
 }
