@@ -10,6 +10,7 @@ class Leader {
         bool shouldTerminate;
         int port;
         int numberOfCommander;
+		std::vector<std::thread> commanderThreads;
 
     public:
         Leader(int port, int numberOfCommander);

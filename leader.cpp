@@ -16,6 +16,31 @@ Leader::Leader(int port, int numberOfCommander){
     this->numberOfCommander = numberOfCommander;
     memset(&recvfrom, 0, sizeof(recvfrom));
 	shouldTerminate = false;
+	
+    for(int i = 1; i<=this->numberOfCommander; ++i){
+        int commander_port = i+port;
+		
+        commanderThreads.emplace_back([commander_port]() {
+			std::vector<std::pair<std::string, int> > replicas;
+			std::vector<std::pair<std::string, int> > leaders;
+			std::vector<std::pair<std::string, int> > acceptors;
+			read_config(replicas, leaders, acceptors);
+            Commander commander(commander_port, replicas, acceptors);
+            commander.run(nullptr);
+            return nullptr;
+        });
+
+        // std::thread commanderThread([port]() {
+        //     std::vector<std::pair<std::string, int> > replicas;
+        //     std::vector<std::pair<std::string, int> > leaders;
+        //     std::vector<std::pair<std::string, int> > acceptors;
+        //     read_config(replicas, leaders, acceptors);
+        //     Commander commander(port, replicas, acceptors);
+        //     commander.run(nullptr);
+        //     return nullptr;
+        // });
+        //commanderThreads.push_back(commanderThread);
+    }
 };
 
 Leader::~Leader(){
@@ -40,6 +65,11 @@ void Leader::run(void* arg) {
 
 void Leader::terminate(){
     shouldTerminate = true;
+	
+	for(int i = 0; i < this->numberOfCommander; ++i){
+        commanderThreads.at(i).join();
+    }
+	
     return;
 }
 
@@ -51,42 +81,13 @@ int main(int argc, char *argv[]) {
         exit(1);
     }
     int numOfCommander = atoi(argv[2]);
-    //std::thread* commanderThread = new std::thread[numOfCommander];
-    std::vector<std::thread> commanderThreads;
-
-    for(int i = 1; i<=numOfCommander; ++i){
-        int port = i+atoi(argv[1]);
-		
-        commanderThreads.emplace_back([port]() {
-			std::vector<std::pair<std::string, int> > replicas;
-			std::vector<std::pair<std::string, int> > leaders;
-			std::vector<std::pair<std::string, int> > acceptors;
-			read_config(replicas, leaders, acceptors);
-            Commander commander(port, replicas, acceptors);
-            commander.run(nullptr);
-            return nullptr;
-        });
-
-        // std::thread commanderThread([port]() {
-        //     std::vector<std::pair<std::string, int> > replicas;
-        //     std::vector<std::pair<std::string, int> > leaders;
-        //     std::vector<std::pair<std::string, int> > acceptors;
-        //     read_config(replicas, leaders, acceptors);
-        //     Commander commander(port, replicas, acceptors);
-        //     commander.run(nullptr);
-        //     return nullptr;
-        // });
-        //commanderThreads.push_back(commanderThread);
-    }
 
     std::thread leaderThread([&]() {
 		Leader leader(atoi(argv[1]), atoi(argv[2]));
         leader.run(nullptr);
         return nullptr;
     });
-    for(int i = 0; i < numOfCommander; ++i){
-        commanderThreads.at(i).join();
-    }
+
     leaderThread.join();
     return 0;
 }
