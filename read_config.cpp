@@ -1,4 +1,5 @@
 #include "node.h"
+#include <cassert>
 
 void read_config(std::vector<Entry> &replicas, std::vector<Entry> &leaders,
                 std::vector<Entry> &acceptors){
@@ -73,4 +74,14 @@ void read_config(std::vector<Entry> &replicas, std::vector<Entry> &leaders,
         int threadStartPort = stoi(startPort);
         leaders.push_back(Entry(hostAddress, hostPort, threadStartPort, numThreads));
     }
+}
+
+Entry getMyEntry(std::vector<Entry> entries, std::string address, int port){
+    for (int i = 0; i < entries.size(); i++) {
+        if (entries[i].address == address && entries[i].hostPort == port) {
+            return entries[i];
+        }
+    }
+    std::cout << "unable to find my entry" << std::endl;
+    assert(false);
 }

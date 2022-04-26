@@ -46,4 +46,6 @@ struct Entry{
 void read_config(std::vector<Entry> &replicas, std::vector<Entry> &leaders,
                 std::vector<Entry> &acceptors);
 
+Entry getMyEntry(std::vector<Entry> entries, std::string address, int port);
+
 #endif
