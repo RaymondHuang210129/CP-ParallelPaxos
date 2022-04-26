@@ -128,23 +128,30 @@ int replica_test() {
 }
 
 int main(int argc, char* argv[]) {
-    // 0      1      
-    // server [port]
+    // 0      1         2
+    // server [address] [port]
     if (argc == 1) {
         std::cout << "Run test" << std::endl;
         replica_test();
     }
-    if(argc != 2) {
+    if(argc != 3) {
         std::cout << "Invalid arguments count. Should enter server [port]" << std::endl;
         exit(1);
     }
-    std::vector<std::pair<std::string, int> > replicas;
-    std::vector<std::pair<std::string, int> > leaders;
-    std::vector<std::pair<std::string, int> > acceptors;
+    std::vector<Entry> replicas;
+    std::vector<Entry> leaders;
+    std::vector<Entry> acceptors;
+    std::string myAddress = argv[1];
+    int myPort = atoi(argv[2]);
     read_config(replicas, leaders, acceptors);
+    Entry myEntry = getMyEntry(replicas, myAddress, myPort);
+    std::vector<std::pair<std::string, int>> leaderAddresses;
+    for (Entry leader : leaders) {
+        leaderAddresses.push_back(std::make_pair(leader.address, leader.threadStartPort));
+    }
 
-    std::thread replicaThread([&replicas, &argv, &leaders]() {
-        Replica replica(atoi(argv[1]), leaders);
+    std::thread replicaThread([&replicas, &argv, &leaderAddresses, &myEntry]() {
+        Replica replica(myEntry.threadStartPort, leaderAddresses);
         replica.run(nullptr);
         return nullptr;
     });
