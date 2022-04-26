@@ -12,18 +12,38 @@ static std::vector<Semaphore*> semaphores;
 static std::vector<Command> logs;
 
 /* This constructor is used to create a executer thread of replica. */
-Replica::Replica(int port, std::vector<std::pair<std::string, int> > leaders) {
+Replica::Replica(int port, std::vector<Entry> leaders) {
     node = new Node(port);
     memset(&recvfrom, 0, sizeof(recvfrom));
-    this->leaders = leaders;
+    std::vector<std::pair<std::string, int> > targetLeaders;
+    if (numThreads == 1 && leaders.size() > 0 && leaders[0].numThreads > 1) {
+        // serial replica parallel leader
+        leaderLoadBalanceIdx = 0;
+        numLeaderInstances = leaders.size();
+        numLeaderThreads = leaders[0].numThreads;
+        for (int j = 0; j < leaders[0].numThreads; j++) {
+            for (int i = 0; i < leaders.size(); i++) {
+                targetLeaders.push_back(std::make_pair(leaders[i].address, leaders[i].threadStartPort + j));
+            }
+        }
+    } else {
+        for (int i = 0; i < leaders.size(); i++) {
+            targetLeaders.push_back(std::make_pair(leaders[i].address, leaders[i].threadStartPort + threadId));
+        }
+        this->leaders = targetLeaders;
+    }
     shouldTerminate = false;
 }
 
 /* This constructor is used to create a handler thread of replica */
-Replica::Replica(int port, std::vector<std::pair<std::string, int> > leaders, int numThreads, int threadId) {
+Replica::Replica(int port, std::vector<Entry> leaders, int numThreads, int threadId) {
     node = new Node(port);
     memset(&recvfrom, 0, sizeof(recvfrom));
-    this->leaders = leaders;
+    std::vector<std::pair<std::string, int> > targetLeaders;
+    for (int i = 0; i < leaders.size(); i++) {
+        targetLeaders.push_back(std::make_pair(leaders[i].address, leaders[i].threadStartPort + threadId));
+    }
+    this->leaders = targetLeaders;
     this->numThreads = numThreads;
     this->threadId = threadId;
     shouldTerminate = false;
@@ -36,7 +56,7 @@ Replica::~Replica() {
 }
 
 /* This method should be called by handler thread */
-void Replica::run(void* arg) {
+void Replica::runParallel(void* arg) {
     while (!shouldTerminate) {
         Message* m = Message::deserialize(node->receive_data((struct sockaddr_in *)&recvfrom));
         Request* request = dynamic_cast<Request*>(m);
@@ -47,9 +67,9 @@ void Replica::run(void* arg) {
             }
             std::cout << "Replica received Request message " << request->serialize() << std::endl;
             requests.insert(request->getCommand());
-            propose();
+            proposeParallel();
         } else if (decision != nullptr) {
-            if (decision->getSlot() % numThreads != threadId) {
+            if (numThreads != 1 && decision->getSlot() % numThreads != threadId) {
                 return;
             }
             std::cout << "Replica received Decision message " << decision->serialize() << std::endl;
@@ -66,7 +86,7 @@ void Replica::run(void* arg) {
                 logs[slotOut] = decidedCommand;
                 semaphores[threadId]->notify();
             }
-            propose();
+            proposeParallel();
         } 
         delete m;
     }
@@ -77,17 +97,17 @@ void Replica::runExecuter(void* arg) {
     for (int slot = 0;; slot++) {
         semaphores[slot % numThreads]->wait();
         Command command = logs[slot];
-        execute(command);
+        executeParallel(command);
     }
 }
 
-void Replica::execute(Command command) {
+void Replica::executeParallel(Command command) {
     Result result(command.getContent(), command.getAddress(), command.getPort());
     Response response(result);
     node->send_data(result.getAddress(), result.getPort(), response.serialize());
 }
 
-void Replica::propose() {
+void Replica::proposeParallel() {
     std::cout << "Replica proposing" << std::endl;
     while (requests.size() > 0) {
         Command command = *requests.begin();
@@ -95,7 +115,15 @@ void Replica::propose() {
             requests.erase(command);
             proposals[slotIn] = command;
             Propose propose(slotIn, command);
-            node->broadcast_data(leaders, propose.serialize());
+            if (numThreads == 1 && leaders.size() > 0 && numLeaderThreads > 1) {
+                std::vector<std::pair<std::string, int> > 
+                        targetLeaders(leaders.begin() + leaderLoadBalanceIdx, 
+                                      leaders.begin() + leaderLoadBalanceIdx + numLeaderInstances);
+                leaderLoadBalanceIdx = (leaderLoadBalanceIdx + numLeaderInstances) % leaders.size(); 
+                node->broadcast_data(targetLeaders, propose.serialize());
+            } else {
+                node->broadcast_data(leaders, propose.serialize());
+            }
         }
         slotIn += numThreads;
     }
@@ -109,45 +137,38 @@ void Replica::terminate() {
 
 int main(int argc, char* argv[]) {
     // 0      1     
-    // server [hostname]
+    // server [address] [port]
 
-    if(argc != 2) {
-        std::cout << "Invalid arguments count. Should enter replica [hostname]" << std::endl;
+    if(argc != 3) {
+        std::cout << "Invalid arguments count. Should enter replica [address] [port]" << std::endl;
         exit(1);
     }
 
-    std::string hostName = argv[1];
+    std::string myAddress = argv[1];
+    int myPort = atoi(argv[2]);
     logs.reserve(10000000);
 
-    std::vector<std::pair<std::string, int> > replicaAddresses;
-    std::vector<std::pair<std::string, int> > leaderAddresses;
-    std::vector<std::pair<std::string, int> > acceptorAddresses;
-    read_config(replicaAddresses, leaderAddresses, acceptorAddresses);
+    std::vector<Entry> replicas;
+    std::vector<Entry> leaders;
+    std::vector<Entry> acceptors;
+    read_config(replicas, leaders, acceptors);
+    Entry myEntry = getMyEntry(replicas, myAddress, myPort);
 
     std::vector<std::thread> threads;
     std::vector<std::pair<std::string, int> > localAddresses;
     
-    // check how many threads to create
-    int threadCount = 0;
-    for (int i = 0; i < replicaAddresses.size(); i++) {
-        if (replicaAddresses[i].first == hostName) {
-            threadCount++;
-            localAddresses.push_back(replicaAddresses[i]);
-        }
-    }
-
-    for (int threadId = 0; threadId < threadCount; threadId++) {
-        if (threadId != threadCount - 1) {
+    for (int threadId = 0; threadId < myEntry.numThreads; threadId++) {
+        if (threadId != myEntry.numThreads - 1) {
             // create threads for handler threads
-            threads.emplace_back([&localAddresses, threadId, &leaderAddresses, &threadCount]() {
-                Replica replica(localAddresses[threadId].second, leaderAddresses, threadCount - 1, threadId);
-                replica.run(nullptr);
+            threads.emplace_back([&localAddresses, threadId, &myEntry, &leaders]() {
+                Replica replica(myEntry.threadStartPort + threadId, leaders, myEntry.numThreads, threadId);
+                replica.runParallel(nullptr);
             });
             semaphores.push_back(new Semaphore(0));
         } else {
             // create thread for executer
-            threads.emplace_back([&localAddresses, &leaderAddresses, &threadId]() {
-                Replica replica(localAddresses[threadId].second, leaderAddresses, 0, 0);
+            threads.emplace_back([&localAddresses, threadId, &myEntry, &leaders]() {
+                Replica replica(localAddresses[threadId].second, leaders);
                 replica.runExecuter(nullptr);
             });
         }
