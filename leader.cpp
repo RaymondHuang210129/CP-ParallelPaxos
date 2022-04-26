@@ -74,20 +74,32 @@ void Leader::terminate(){
 }
 
 int main(int argc, char *argv[]) {
-    // 0      1      2
-    // server [port] [number of commander]
+    // 0      1                     2
+    // server [number of commander] [leader ip]
     if(argc != 3) {
-        std::cout << "Invalid arguments count. Should enter server [port] [number of commander]\n " << std::endl;
+        std::cout << "Invalid arguments count. Should enter server [number of commander] [leader ip]\n " << std::endl;
         exit(1);
     }
-    int numOfCommander = atoi(argv[2]);
+	
+	std::vector<std::pair<std::string, int> > replicas;
+	std::vector<std::pair<std::string, int> > leaders;
+	std::vector<std::pair<std::string, int> > acceptors;
+	read_config(replicas, leaders, acceptors);
 
-    std::thread leaderThread([&]() {
-		Leader leader(atoi(argv[1]), atoi(argv[2]));
-        leader.run(nullptr);
-        return nullptr;
-    });
-
-    leaderThread.join();
+	std::vector<std::thread> leaderThreads;
+    for (int i = 0; i < leaders.size(); i++){
+		if(leaders[i].first == argv[2]){
+			leaderThreads.emplace_back([&leaders, &argv, i]() {
+				Leader leader(leaders[i].second, atoi(argv[1]));
+				leader.run(nullptr);
+				return nullptr;
+			});
+		}
+	}
+    
+	for(int i = 0; i < leaderThreads.size(); ++i){
+        leaderThreads.at(i).join();
+    }
+	
     return 0;
 }
