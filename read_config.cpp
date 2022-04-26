@@ -1,30 +1,93 @@
 #include "node.h"
 
-void read_config(std::vector<std::pair<std::string, int> > &replicas, std::vector<std::pair<std::string, int> > &leaders,
-                std::vector<std::pair<std::string, int> > &acceptors){
+void read_config(std::vector<Entry> &replicas, std::vector<Entry> &leaders,
+                std::vector<Entry> &acceptors){
     std::ifstream config;
     config.open("config.conf");
-    std::string tmp;
-    while (getline(config,tmp) && tmp != "----"){ // process replicas
-        std::string delimiter = " ";
-        int pos = tmp.find(delimiter);
-        std::string address = tmp.substr(0, pos);
-        std::string port = tmp.substr(pos+1, tmp.length());
-        replicas.push_back(std::make_pair(address, stoi(port)));
+    std::string line;
+    // lines before section 1
+    while (std::getline(config, line)) {
+        if (line == "") continue;
+        line = line.substr(0, line.find("//"));
+        if (line.substr(0, 4) == "----") {
+            break;
+        }
     }
-    while (getline(config,tmp) && tmp != "----"){// process leaders
-        std::string delimiter = " ";
-        int pos = tmp.find(delimiter);
-        std::string address = tmp.substr(0, pos);
-        std::string port = tmp.substr(pos+1, tmp.length());
-        leaders.push_back(std::make_pair(address, stoi(port)));
+
+    // lines in section 1
+    while (std::getline(config, line)) {
+        if (line == "") continue;
+        line = line.substr(0, line.find("//"));
+        if (line.substr(0, 4) == "----") {
+            break;
+        }
+        if (line == "") continue;
+        int pos = line.find(" ");
+        std::string host = line.substr(0, pos);
+        line = line.substr(pos+1, line.length());
+        pos = line.find(" ");
+        std::string startPort = line.substr(0, pos);
+        int numThreads = stoi(line.substr(pos+1, line.length()));
+        std::string hostAddress = host.substr(0, host.find(":"));
+        int hostPort = stoi(host.substr(host.find(":")+1));
+        int threadStartPort = stoi(startPort);
+        replicas.push_back(Entry(hostAddress, hostPort, threadStartPort, numThreads));
     }
-    while (getline(config,tmp)){ // process acceptors
-        std::string delimiter = " ";
-        int pos = tmp.find(delimiter);
-        std::string address = tmp.substr(0, pos);
-        std::string port = tmp.substr(pos+1, tmp.length());
-        acceptors.push_back(std::make_pair(address, stoi(port)));
+
+    // lines in section 2
+    while (std::getline(config, line)) {
+        if (line == "") continue;
+        line = line.substr(0, line.find("//"));
+        if (line.substr(0, 4) == "----") {
+            break;
+        }
+        if (line == "") continue;
+        int pos = line.find(" ");
+        std::string host = line.substr(0, pos);
+        line = line.substr(pos+1, line.length());
+        pos = line.find(" ");
+        std::string startPort = line.substr(0, pos);
+        int numThreads = stoi(line.substr(pos+1, line.length()));
+        std::string hostAddress = host.substr(0, host.find(":"));
+        int hostPort = stoi(host.substr(host.find(":")+1));
+        int threadStartPort = stoi(startPort);
+        leaders.push_back(Entry(hostAddress, hostPort, threadStartPort, numThreads));
     }
-    config.close();
+
+    // lines in section 3
+    while (std::getline(config, line)) {
+        
+        line = line.substr(0, line.find("//"));
+        if (line.substr(0, 4) == "----") {
+            break;
+        }
+        if (line == "") continue;
+        int pos = line.find(" ");
+        std::string host = line.substr(0, pos);
+        line = line.substr(pos+1, line.length());
+        pos = line.find(" ");
+        std::string startPort = line.substr(0, pos);
+        int numThreads = stoi(line.substr(pos+1, line.length()));
+        std::string hostAddress = host.substr(0, host.find(":"));
+        int hostPort = stoi(host.substr(host.find(":")+1));
+        int threadStartPort = stoi(startPort);
+        leaders.push_back(Entry(hostAddress, hostPort, threadStartPort, numThreads));
+    }
+}
+
+int main() {
+    std::vector<Entry> replicas;
+    std::vector<Entry> leaders;
+    std::vector<Entry> acceptors;
+    read_config(replicas, leaders, acceptors);
+    for (int i = 0; i < replicas.size(); i++) {
+        std::cout << replicas[i].address << " " << replicas[i].hostPort << " " << replicas[i].threadStartPort << " " << replicas[i].numThreads << std::endl;
+    }
+    for (int i = 0; i < leaders.size(); i++) {
+        std::cout << leaders[i].address << " " << leaders[i].hostPort << " " << leaders[i].threadStartPort << " " << leaders[i].numThreads << std::endl;
+    }
+    for (int i = 0; i < acceptors.size(); i++) {
+        std::cout << acceptors[i].address << " " << acceptors[i].hostPort << " " << acceptors[i].threadStartPort << " " << acceptors[i].numThreads << std::endl;
+    }
+    return 0;
 }

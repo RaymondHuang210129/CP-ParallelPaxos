@@ -25,11 +25,25 @@ class Node
         struct sockaddr_in setDest(std::string, int);
         bool send_data(sockaddr_in*, std::string);
 		bool send_data(std::string, int, std::string);
-		bool broadcast_data(std::vector<std::pair<std::string, int>>&, std::string);
+		bool broadcast_data(std::vector<std::pair<std::string, int> >&, std::string);
         std::string receive_data(sockaddr_in*);
 		int getPort();
 };
-void read_config(std::vector<std::pair<std::string, int> > &replicas, std::vector<std::pair<std::string, int> > &leaders,
-                std::vector<std::pair<std::string, int> > &acceptors);
+
+struct Entry{
+    std::string address;
+    int hostPort;
+    int threadStartPort;
+    int numThreads;
+    Entry(std::string address, int hostPort, int threadStartPort, int numThreads){
+        this->address = address;
+        this->hostPort = hostPort;
+        this->threadStartPort = threadStartPort;
+        this->numThreads = numThreads;
+    }
+};
+
+void read_config(std::vector<Entry> &replicas, std::vector<Entry> &leaders,
+                std::vector<Entry> &acceptors);
 
 #endif
