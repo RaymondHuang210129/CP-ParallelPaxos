@@ -20,11 +20,15 @@ class Replica {
         std::vector<std::pair<std::string, int> > leaders;
         int slotIn;
         int slotOut;
+        int numThreads;
+        int threadId;
         void propose();
-        void perform(Command);
+        void execute(Command command);
     public:
         Replica(int port, std::vector<std::pair<std::string, int> > leaders);
+        Replica(int port, std::vector<std::pair<std::string, int> > leaders, int numThreads, int threadId);
         void run(void* arg);
+        void runExecuter(void* arg);
         void terminate();
         ~Replica();
 };
