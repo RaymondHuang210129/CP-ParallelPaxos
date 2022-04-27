@@ -85,6 +85,7 @@ void Replica::runParallel(void* arg) {
                     }
                 }
                 logs[slotOut] = decidedCommand;
+                slotOut++;
                 semaphores[threadId]->notify();
             }
             proposeParallel();
