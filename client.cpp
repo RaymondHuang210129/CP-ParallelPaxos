@@ -9,6 +9,15 @@ Client::Client(int port, std::string ip){
     memset(&recvfrom, 0, sizeof(recvfrom));
 	recv_count = 0;
 	this->ip = ip;
+
+    std::vector<Entry> leaders_entry;
+    std::vector<Entry> acceptors_entry;
+	std::vector<Entry> replicas_entry;
+	read_config(replicas_entry, leaders_entry, acceptors_entry);
+
+	for (int i = 0; i < replicas_entry.size(); i++) {
+		replicas.push_back(std::make_pair(replicas_entry[i].address, replicas_entry[i].threadStartPort + i));
+	}
 };
 
 Client::~Client(){
@@ -40,7 +49,7 @@ void Client::run(){
 		std::string cmd = "cmd" + std::to_string(recv_count) + "@" + std::to_string(node->getPort());
 		Request request = Request(Command(cmd, ip, node->getPort()));
 		send(request.serialize());
-		
+
 		Result recv_result = recv();
 		while(request.getCommand().serialize() != recv_result.serialize()){
 			std::cout << "Mismatch command" << std::endl;
@@ -60,7 +69,7 @@ int main(int argc, char *argv[]) {
         std::cout << "Invalid arguments count. Should enter [client-port] [client-thread-number] [client-ip]\n " << std::endl;
         exit(1);
     }
-	
+
 	int numOfClient = atoi(argv[2]);
 	std::vector<std::thread> clientThreads;
 	for(int i = 0; i<numOfClient; ++i){
