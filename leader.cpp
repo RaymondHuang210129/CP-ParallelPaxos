@@ -79,7 +79,7 @@ int main(int argc, char *argv[]) {
     read_config(replicas, leaders, acceptors);
     std::string myAddress = argv[1];
     int leaderPort = atoi(argv[2]);
-    Entry myEntry = getMyEntry(replicas, myAddress, leaderPort);
+    Entry myEntry = getMyEntry(leaders, myAddress, leaderPort);
 
 	std::vector<std::thread> leaderThreads;
     int numberOfCommander = atoi(argv[3]);
