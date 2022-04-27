@@ -4,12 +4,12 @@
 #include <sys/time.h>
 #include "message.h"
 #include "client.h"
-#define CLIENT_RECV_MAX 100
+#define CLIENT_RECV_MAX 1
 
 Client::Client(int port, std::string ip){
     node = new Node(port);
     memset(&recvfrom, 0, sizeof(recvfrom));
-	recv_count = 0;
+	recv_count = -1;
 	this->ip = ip;
 
     std::vector<Entry> leaders_entry;
