@@ -39,7 +39,7 @@ void Leader::run(void* arg) {
         Message* m = Message::deserialize(node->receive_data((struct sockaddr_in *)&recvfrom));
         Propose* propose = dynamic_cast<Propose*>(m);
         if (propose != nullptr) {
-            std::cout << "Leader Receive Propose message " << propose->serialize() << std::endl;
+            //std::cout << "Leader Receive Propose message " << propose->serialize() << std::endl;
             Assign assign(propose->getSlot(), propose->getCommand());
             node->send_data("127.0.0.1", commanderStartPort+(assignCommander%numberOfCommander), assign.serialize());
         }

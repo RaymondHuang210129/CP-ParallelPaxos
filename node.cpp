@@ -9,7 +9,7 @@ Node::Node(int port_in)
 	if (sock == -1){
 		perror("Could not create socket");
 	}
-	std::cout<<"Socket created on: "<<port<<"\n";
+	//std::cout<<"Socket created on: "<<port<<"\n";
 	
 	struct sockaddr_in server_addr;
 	server_addr.sin_family = AF_INET;
@@ -69,7 +69,7 @@ struct sockaddr_in Node::setDest(std::string address, int port){
 bool Node::send_data(sockaddr_in* receiver, std::string data){
 	char tmp[20];
 	inet_ntop(AF_INET, &(receiver->sin_addr), tmp, INET_ADDRSTRLEN);
-    std::cout<<"Sending " << data << " to "<<tmp<<":"<<htons(receiver->sin_port)<<"...\n";
+    //std::cout<<"Sending " << data << " to "<<tmp<<":"<<htons(receiver->sin_port)<<"...\n";
 	
     // Send some data
     if(sendto(sock, data.c_str(), strlen(data.c_str()), 0, (struct sockaddr *)receiver, (socklen_t)sizeof(struct sockaddr)) < 0){
