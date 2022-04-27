@@ -8,6 +8,7 @@
 #include <thread>
 #include <cassert>
 #include <unordered_set>
+#include <chrono>
 
 #include <fstream>
 #include <utility>
@@ -30,6 +31,13 @@ Commander::~Commander(){
 };
 
 void Commander::run(void* arg) {
+    std::thread timerThread([this]{
+        while (true) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+            std::cout << "thread " << this->node->getPort() << ": " << this->waitFor.size() << std::endl;
+        }
+    });
+
     while (!shouldTerminate) {
         Message* m = Message::deserialize(node->receive_data((struct sockaddr_in *)&recvfrom));
         if(dynamic_cast<Assign*>(m) != nullptr) {
