@@ -1,9 +1,11 @@
 #include <string>
 #include <iostream>
 #include <thread>
+#include <sys/time.h>
 #include "message.h"
 #include "client.h"
 #define CLIENT_RECV_MAX 100
+
 Client::Client(int port, std::string ip){
     node = new Node(port);
     memset(&recvfrom, 0, sizeof(recvfrom));
@@ -16,7 +18,9 @@ Client::Client(int port, std::string ip){
 	read_config(replicas_entry, leaders_entry, acceptors_entry);
 
 	for (int i = 0; i < replicas_entry.size(); i++) {
-		replicas.push_back(std::make_pair(replicas_entry[i].address, replicas_entry[i].threadStartPort + i));
+		for (int j = 0; j < replicas_entry[i].numThreads; j++) {
+			replicas.push_back(std::make_pair(replicas_entry[i].address, replicas_entry[i].threadStartPort + j));
+		}
 	}
 };
 
@@ -69,9 +73,13 @@ int main(int argc, char *argv[]) {
         std::cout << "Invalid arguments count. Should enter [client-port] [client-thread-number] [client-ip]\n " << std::endl;
         exit(1);
     }
-
+	
 	int numOfClient = atoi(argv[2]);
 	std::vector<std::thread> clientThreads;
+	
+	struct timeval start_time, end_time;
+    gettimeofday(&start_time, NULL);
+	
 	for(int i = 0; i<numOfClient; ++i){
 		int port = i+atoi(argv[1]);
 		std::string ip = argv[3];
@@ -85,5 +93,11 @@ int main(int argc, char *argv[]) {
 	for(int i = 0; i < numOfClient; ++i){
         clientThreads.at(i).join();
     }
+	
+	gettimeofday(&end_time, NULL);
+    
+    float delta_ns = (end_time.tv_sec - start_time.tv_sec) * 1.0f + (end_time.tv_usec - start_time.tv_usec) * 0.000001f;
+    printf("Throughput = %f commands\ns", (CLIENT_RECV_MAX*numOfClient)/delta_ns);
+	
     return 0;
 }
