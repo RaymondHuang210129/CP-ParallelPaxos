@@ -9,12 +9,13 @@ class Client {
 		int recv_count;
 		std::vector<std::pair<std::string, int> > replicas;
         std::string ip;
+        void send(std::string req);
+        Result recv();
+        bool needTerminate();
     public:
         Client(int port, std::string ip);
 		~Client();
-        void send(std::string req);
-        Result recv();
 		void run();
-		bool needTerminate();
+        int getReceiveCount();
 };
 #endif

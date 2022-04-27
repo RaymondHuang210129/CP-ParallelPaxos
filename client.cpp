@@ -2,6 +2,8 @@
 #include <iostream>
 #include <thread>
 #include <sys/time.h>
+#include <mutex>
+#include <chrono>
 #include "message.h"
 #include "client.h"
 #define CLIENT_RECV_MAX 100
@@ -69,6 +71,10 @@ bool Client::needTerminate() {
 	return (recv_count == CLIENT_RECV_MAX);
 }
 
+int Client::getReceiveCount() {
+	return recv_count;
+}
+
 int main(int argc, char *argv[]) {
     if(argc != 4){
         std::cout << "Invalid arguments count. Should enter [client-ip] [client-port] [client-thread-number]\n " << std::endl;
@@ -80,15 +86,31 @@ int main(int argc, char *argv[]) {
 	
 	struct timeval start_time, end_time;
     gettimeofday(&start_time, NULL);
-	
-	for(int i = 0; i<numOfClient; ++i){
-		int port = i+atoi(argv[2]);
+
+	std::vector<Client*> clients;
+
+	for(int i = 0; i < numOfClient; ++i){
+		int port = i + atoi(argv[2]);
 		std::string ip = argv[1];
-		clientThreads.emplace_back([port, ip]() {
-            Client tmpClient(port, ip);
-            tmpClient.run();
+		clients.emplace_back(new Client(port, ip));
+	}
+	
+	for(int i = 0; i < numOfClient; ++i){
+		clientThreads.emplace_back([&clients, i]() {
+            clients.at(i)->run();
             return nullptr;
         });
+	}
+
+	int totalReceiveCount = 0;
+	for (int sec = 1;; sec++) {
+		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+		int receiveCount = 0;
+		for (int i = 0; i < numOfClient; i++) {
+			receiveCount += clients[i]->getReceiveCount();
+		}
+		std::cout << sec << " seconds expired: " << receiveCount - totalReceiveCount << std::endl;
+		totalReceiveCount = receiveCount;
 	}
 
 	for(int i = 0; i < numOfClient; ++i){
