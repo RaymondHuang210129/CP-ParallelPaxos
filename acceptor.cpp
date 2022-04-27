@@ -45,7 +45,7 @@ int main(int argc, char *argv[]) {
     read_config(replicas, leaders, acceptors);
     std::string myAddress = argv[1];
     int myPort = atoi(argv[2]);
-    Entry myEntry = getMyEntry(replicas, myAddress, myPort);
+    Entry myEntry = getMyEntry(acceptors, myAddress, myPort);
 
     std::vector<std::thread> acceptorsThreads;
     for (int i = 0; i < myEntry.numThreads; i++){
