@@ -4,7 +4,7 @@
 #include <sys/time.h>
 #include "message.h"
 #include "client.h"
-#define CLIENT_RECV_MAX 1
+#define CLIENT_RECV_MAX 100
 
 Client::Client(int port, std::string ip){
     node = new Node(port);
@@ -60,6 +60,7 @@ void Client::run(){
 			recv_result = recv();
 		}
 		std::cout << "Got result: "<<recv_result.serialize() << std::endl;
+		
 	}
 };
 
@@ -70,19 +71,19 @@ bool Client::needTerminate() {
 
 int main(int argc, char *argv[]) {
     if(argc != 4){
-        std::cout << "Invalid arguments count. Should enter [client-port] [client-thread-number] [client-ip]\n " << std::endl;
+        std::cout << "Invalid arguments count. Should enter [client-ip] [client-port] [client-thread-number]\n " << std::endl;
         exit(1);
     }
 	
-	int numOfClient = atoi(argv[2]);
+	int numOfClient = atoi(argv[3]);
 	std::vector<std::thread> clientThreads;
 	
 	struct timeval start_time, end_time;
     gettimeofday(&start_time, NULL);
 	
 	for(int i = 0; i<numOfClient; ++i){
-		int port = i+atoi(argv[1]);
-		std::string ip = argv[3];
+		int port = i+atoi(argv[2]);
+		std::string ip = argv[1];
 		clientThreads.emplace_back([port, ip]() {
             Client tmpClient(port, ip);
             tmpClient.run();
