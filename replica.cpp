@@ -58,12 +58,12 @@ Replica::~Replica() {
 
 /* This method should be called by handler thread */
 void Replica::runParallel(void* arg) {
-    std::thread timerThread([this]{
-        while (true) {
-            std::this_thread::sleep_for(std::chrono::milliseconds(100));
-            //this->resendProposal();
-        }
-    });
+    // std::thread timerThread([this]{
+    //     while (true) {
+    //         std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    //         this->resendProposal();
+    //     }
+    // });
     while (!shouldTerminate) {
         Message* m = Message::deserialize(node->receive_data((struct sockaddr_in *)&recvfrom));
         Request* request = dynamic_cast<Request*>(m);
@@ -100,8 +100,8 @@ void Replica::runParallel(void* arg) {
             proposeParallel();
         } 
         delete m;
-        timerThread.join();
     }
+    //timerThread.join();
 }
 
 /* This method should be called by executer thread */
