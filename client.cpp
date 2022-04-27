@@ -10,9 +10,14 @@ Client::Client(int port, std::string ip){
 	recv_count = 0;
 	this->ip = ip;
 	
-    std::vector<std::pair<std::string, int> > leaders;
-    std::vector<std::pair<std::string, int> > acceptors;
-	read_config(replicas, leaders, acceptors);
+    std::vector<Entry> leaders_entry;
+    std::vector<Entry> acceptors_entry;
+	std::vector<Entry> replicas_entry;
+	read_config(replicas_entry, leaders_entry, acceptors_entry);
+	
+	for (int i = 0; i < replicas_entry.size(); i++) {
+		replicas.push_back(std::make_pair(replicas_entry[i].address, replicas_entry[i].threadStartPort + i));
+	}
 };
 
 Client::~Client(){
