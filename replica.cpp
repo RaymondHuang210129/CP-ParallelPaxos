@@ -61,7 +61,7 @@ void Replica::runParallel(void* arg) {
     std::thread timerThread([this]{
         while (true) {
             std::this_thread::sleep_for(std::chrono::milliseconds(100));
-            this->resendProposal();
+            //this->resendProposal();
         }
     });
     while (!shouldTerminate) {
@@ -93,7 +93,7 @@ void Replica::runParallel(void* arg) {
                 }
                 std::cout << "execute slotOut " << slotOut << std::endl;
                 logs[slotOut] = decidedCommand;
-                slotOut++;
+                slotOut += numThreads;
                 semaphores[threadId]->notify();
             }
             proposalMutex.unlock();
