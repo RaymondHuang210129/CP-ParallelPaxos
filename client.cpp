@@ -103,7 +103,7 @@ int main(int argc, char *argv[]) {
 	}
 
 	int totalReceiveCount = 0;
-	for (int sec = 1;; sec++) {
+	for (int sec = 1; sec < 20; sec++) {
 		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 		int receiveCount = 0;
 		for (int i = 0; i < numOfClient; i++) {
@@ -112,6 +112,8 @@ int main(int argc, char *argv[]) {
 		std::cout << sec << " seconds expired: " << receiveCount - totalReceiveCount << std::endl;
 		totalReceiveCount = receiveCount;
 	}
+
+	return 0;
 
 	for(int i = 0; i < numOfClient; ++i){
         clientThreads.at(i).join();
