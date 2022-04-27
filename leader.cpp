@@ -18,7 +18,7 @@ Leader::Leader(Entry myEntry, int numberOfCommander, int threadID, std::vector<E
     node = new Node(port);
     memset(&recvfrom, 0, sizeof(recvfrom));
 	shouldTerminate = false;
-	int commanderStartPort = myEntry.threadStartPort + myEntry.numThreads + threadID * numberOfCommander;
+	this->commanderStartPort = myEntry.threadStartPort + myEntry.numThreads + threadID * numberOfCommander;
     for(int i = 0; i < this->numberOfCommander; ++i){
         int commanderPort = commanderStartPort+i;
         commanderThreads.emplace_back([commanderPort, &threadID, &replicas, &acceptors]() {
@@ -41,7 +41,7 @@ void Leader::run(void* arg) {
         if (propose != nullptr) {
             std::cout << "Leader Receive Propose message " << propose->serialize() << std::endl;
             Assign assign(propose->getSlot(), propose->getCommand());
-            node->send_data("127.0.0.1", port+(assignCommander%numberOfCommander)+1, assign.serialize());
+            node->send_data("127.0.0.1", commanderStartPort+(assignCommander%numberOfCommander)+1, assign.serialize());
         }
         delete m;
         assignCommander+=1;

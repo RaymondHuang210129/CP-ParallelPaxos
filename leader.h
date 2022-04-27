@@ -11,6 +11,7 @@ class Leader {
         int numberOfCommander;
         int threadID;
         int port;
+        int commanderStartPort;
         Entry myEntry;
 		std::vector<std::thread> commanderThreads;
 
