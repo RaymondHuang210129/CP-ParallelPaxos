@@ -74,14 +74,14 @@ void Replica::runParallel(void* arg) {
             if (stoi(request->getCommand().getContent()) % numThreads != threadId) {
                 continue;
             }
-            std::cout << "Replica received Request message " << request->serialize() << std::endl;
+            //std::cout << "Replica received Request message " << request->serialize() << std::endl;
             requests.insert(request->getCommand());
             proposeParallel();
         } else if (decision != nullptr) {
             if (numThreads != 1 && decision->getSlot() % numThreads != threadId) {
                 continue;
             }
-            std::cout << "Replica received Decision message " << decision->serialize() << std::endl;
+            //std::cout << "Replica received Decision message " << decision->serialize() << std::endl;
             decisions[decision->getSlot()] = decision->getCommand();
             proposalMutex.lock();
             while (decisions.find(slotOut) != decisions.end()) {
@@ -93,7 +93,7 @@ void Replica::runParallel(void* arg) {
                         requests.insert(proposedCommand);
                     }
                 }
-                std::cout << "execute slotOut " << slotOut << std::endl;
+                //std::cout << "execute slotOut " << slotOut << std::endl;
                 logs[slotOut] = decidedCommand;
                 slotOut += numThreads;
                 semaphores[threadId]->notify();
@@ -122,7 +122,7 @@ void Replica::executeParallel(Command command) {
 }
 
 void Replica::proposeParallel() {
-    std::cout << "Replica proposing" << std::endl;
+    //std::cout << "Replica proposing" << std::endl;
     proposalMutex.lock();
     while (requests.size() > 0) {
         Command command = *requests.begin();

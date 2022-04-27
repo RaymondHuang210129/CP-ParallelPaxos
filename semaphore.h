@@ -16,7 +16,7 @@ class Semaphore {
         {
             std::unique_lock<std::mutex> lock(mtx);
             count++;
-            std::cout << "sem is now " << count << std::endl; 
+            //std::cout << "sem is now " << count << std::endl; 
             cv.notify_one();
         }
 
@@ -27,7 +27,7 @@ class Semaphore {
                 cv.wait(lock);
             }
             count--;
-            std::cout << "sem is now " << count << std::endl; 
+            //std::cout << "sem is now " << count << std::endl; 
         }
 };
 

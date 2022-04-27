@@ -18,7 +18,7 @@ void Acceptor::run(void* arg) {
         Message* m = Message::deserialize(node->receive_data((struct sockaddr_in *)&recvfrom));
         Accept* accept = dynamic_cast<Accept*>(m);
         if (accept != nullptr) {
-            std::cout << "Acceptor received Accept message " << accept->serialize() << std::endl;
+            //std::cout << "Acceptor received Accept message " << accept->serialize() << std::endl;
             Accepted accepted(accept->getSlot(), accept->getCommand());
             node->send_data((struct sockaddr_in *)&recvfrom, accepted.serialize());
         }
