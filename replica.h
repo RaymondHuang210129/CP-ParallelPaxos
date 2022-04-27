@@ -20,11 +20,18 @@ class Replica {
         std::vector<std::pair<std::string, int> > leaders;
         int slotIn;
         int slotOut;
-        void propose();
-        void perform(Command);
+        int numThreads;
+        int threadId;
+        int leaderLoadBalanceIdx; // used in serial replica parallel leader
+        int numLeaderThreads; // used in serial replica parallel leader
+        int numLeaderInstances; // used in serial replica parallel leader
+        void proposeParallel();
+        void executeParallel(Command command);
     public:
-        Replica(int port, std::vector<std::pair<std::string, int> > leaders);
-        void run(void* arg);
+        Replica(int port, std::vector<Entry> leaders);
+        Replica(int port, std::vector<Entry> leaders, int numThreads, int threadId);
+        void runParallel(void* arg);
+        void runExecuter(void* arg);
         void terminate();
         ~Replica();
 };
