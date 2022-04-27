@@ -61,12 +61,7 @@ void Replica::runParallel(void* arg) {
     std::thread timerThread([this]{
         while (true) {
             std::this_thread::sleep_for(std::chrono::milliseconds(100));
-            this->proposalMutex.lock();
-            for (auto it = proposals.begin(); it != proposals.end(); it++) {
-                Propose propose(it->first, it->second);
-                this->node->broadcast_data(this->leaders, propose.serialize());
-            }
-            this->proposalMutex.unlock();
+            this->resendProposal();
         }
     });
     while (!shouldTerminate) {
@@ -145,6 +140,15 @@ void Replica::proposeParallel() {
         slotIn += numThreads;
     }
     proposalMutex.unlock();
+}
+
+void Replica::resendProposal() {
+    this->proposalMutex.lock();
+    for (auto it = proposals.begin(); it != proposals.end(); it++) {
+        Propose propose(it->first, it->second);
+        this->node->broadcast_data(this->leaders, propose.serialize());
+    }
+    this->proposalMutex.unlock();
 }
 
 void Replica::terminate() {
