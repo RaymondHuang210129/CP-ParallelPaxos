@@ -17,22 +17,22 @@ Replica::Replica(int port, std::vector<Entry> leaders, int numThreads) {
     this->numThreads = numThreads;
     memset(&recvfrom, 0, sizeof(recvfrom));
     std::vector<std::pair<std::string, int> > targetLeaders;
-    if (numThreads == 1 && leaders.size() > 0 && leaders[0].numThreads > 1) {
-        // serial replica parallel leader
-        leaderLoadBalanceIdx = 0;
-        numLeaderInstances = leaders.size();
-        numLeaderThreads = leaders[0].numThreads;
-        for (int j = 0; j < leaders[0].numThreads; j++) {
-            for (int i = 0; i < leaders.size(); i++) {
-                targetLeaders.push_back(std::make_pair(leaders[i].address, leaders[i].threadStartPort + j));
-            }
-        }
-    } else {
-        for (int i = 0; i < leaders.size(); i++) {
-            targetLeaders.push_back(std::make_pair(leaders[i].address, leaders[i].threadStartPort + threadId));
-        }
-        this->leaders = targetLeaders;
+    // if (numThreads == 1 && leaders.size() > 0 && leaders[0].numThreads > 1) {
+    //     // serial replica parallel leader
+    //     leaderLoadBalanceIdx = 0;
+    //     numLeaderInstances = leaders.size();
+    //     numLeaderThreads = leaders[0].numThreads;
+    //     for (int j = 0; j < leaders[0].numThreads; j++) {
+    //         for (int i = 0; i < leaders.size(); i++) {
+    //             targetLeaders.push_back(std::make_pair(leaders[i].address, leaders[i].threadStartPort + j));
+    //         }
+    //     }
+    // } else {
+    for (int i = 0; i < leaders.size(); i++) {
+        targetLeaders.push_back(std::make_pair(leaders[i].address, leaders[i].threadStartPort + threadId));
     }
+    this->leaders = targetLeaders;
+    // }
     shouldTerminate = false;
 }
 
@@ -130,15 +130,15 @@ void Replica::proposeParallel() {
             requests.erase(command);
             proposals[slotIn] = command;
             Propose propose(slotIn, command);
-            if (numThreads == 1 && leaders.size() > 0 && numLeaderThreads > 1) {
-                std::vector<std::pair<std::string, int> > 
-                        targetLeaders(leaders.begin() + leaderLoadBalanceIdx, 
-                                      leaders.begin() + leaderLoadBalanceIdx + numLeaderInstances);
-                leaderLoadBalanceIdx = (leaderLoadBalanceIdx + numLeaderInstances) % leaders.size(); 
-                node->broadcast_data(targetLeaders, propose.serialize());
-            } else {
-                node->broadcast_data(leaders, propose.serialize());
-            }
+            // if (numThreads == 1 && leaders.size() > 0 && numLeaderThreads > 1) {
+            //     std::vector<std::pair<std::string, int> > 
+            //             targetLeaders(leaders.begin() + leaderLoadBalanceIdx, 
+            //                           leaders.begin() + leaderLoadBalanceIdx + numLeaderInstances);
+            //     leaderLoadBalanceIdx = (leaderLoadBalanceIdx + numLeaderInstances) % leaders.size(); 
+            //     node->broadcast_data(targetLeaders, propose.serialize());
+            // } else {
+            node->broadcast_data(leaders, propose.serialize());
+            // }
         }
         slotIn += numThreads;
     }

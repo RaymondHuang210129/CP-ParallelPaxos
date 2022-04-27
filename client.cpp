@@ -63,7 +63,7 @@ void Client::run(){
 			std::cout << "Mismatch command" << std::endl;
 			recv_result = recv();
 		}
-		std::cout << "Got result: "<<recv_result.serialize() << std::endl;
+		//std::cout << "Got result: "<<recv_result.serialize() << std::endl;
 		
 	}
 };
