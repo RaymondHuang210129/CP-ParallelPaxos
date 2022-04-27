@@ -8,11 +8,13 @@
 #include "client.h"
 #define CLIENT_RECV_MAX 100
 
-Client::Client(int port, std::string ip){
+Client::Client(int port, std::string ip, int threadId, int clientRecvMax){
     node = new Node(port);
     memset(&recvfrom, 0, sizeof(recvfrom));
-	recv_count = -1;
+	recvCount = -1;
 	this->ip = ip;
+	this->threadId = threadId;
+	this->clientRecvMax = clientRecvMax;
 
     std::vector<Entry> leaders_entry;
     std::vector<Entry> acceptors_entry;
@@ -52,7 +54,7 @@ Result Client::recv(){
 
 void Client::run(){
 	while(!needTerminate()){
-		std::string cmd = std::to_string(recv_count);//"cmd" + std::to_string(recv_count) + "@" + std::to_string(node->getPort());
+		std::string cmd = std::to_string(recvCount+threadId);//"cmd" + std::to_string(recvCount) + "@" + std::to_string(node->getPort());
 		Request request = Request(Command(cmd, ip, node->getPort()));
 		send(request.serialize());
 
@@ -67,21 +69,22 @@ void Client::run(){
 };
 
 bool Client::needTerminate() {
-	++recv_count;
-	return (recv_count == CLIENT_RECV_MAX);
+	++recvCount;
+	return (recvCount == clientRecvMax);
 }
 
 int Client::getReceiveCount() {
-	return recv_count;
+	return recvCount;
 }
 
 int main(int argc, char *argv[]) {
-    if(argc != 4){
-        std::cout << "Invalid arguments count. Should enter [client-ip] [client-port] [client-thread-number]\n " << std::endl;
+    if(argc != 5){
+        std::cout << "Invalid arguments count. Should enter [ip] [port] [thread number] [recv max]\n " << std::endl;
         exit(1);
     }
 	
 	int numOfClient = atoi(argv[3]);
+	int clientRecvMax = atoi(argv[4]);
 	std::vector<std::thread> clientThreads;
 	
 	struct timeval start_time, end_time;
@@ -92,7 +95,7 @@ int main(int argc, char *argv[]) {
 	for(int i = 0; i < numOfClient; ++i){
 		int port = i + atoi(argv[2]);
 		std::string ip = argv[1];
-		clients.emplace_back(new Client(port, ip));
+		clients.emplace_back(new Client(port, ip, numOfClient, clientRecvMax));
 	}
 	
 	for(int i = 0; i < numOfClient; ++i){
