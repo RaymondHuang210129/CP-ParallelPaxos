@@ -16,10 +16,10 @@
 Commander::Commander(int port, int leaderThreadID, std::vector<Entry> replicas, std::vector<Entry> acceptors){
     node = new Node(port);
     for (int i = 0; i < replicas.size(); i++) {
-        this->replicas.push_back(std::make_pair(replicas[i].address, replicas[i].threadStartPort + i));
+        this->replicas.push_back(std::make_pair(replicas[i].address, replicas[i].threadStartPort + leaderThreadID));
     }
     for (int i = 0; i < acceptors.size(); i++) {
-        this->acceptors.push_back(std::make_pair(acceptors[i].address, acceptors[i].threadStartPort + i));
+        this->acceptors.push_back(std::make_pair(acceptors[i].address, acceptors[i].threadStartPort + leaderThreadID));
     }
     memset(&recvfrom, 0, sizeof(recvfrom));
 	shouldTerminate = false;
