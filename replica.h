@@ -18,6 +18,7 @@ class Replica {
         std::map<int, Command> decisions;
         std::map<int, Command> proposals;
         std::vector<std::pair<std::string, int> > leaders;
+        std::mutex proposalMutex;
         int slotIn;
         int slotOut;
         int numThreads;
@@ -27,6 +28,7 @@ class Replica {
         int numLeaderInstances; // used in serial replica parallel leader
         void proposeParallel();
         void executeParallel(Command command);
+        void resendProposal();
     public:
         Replica(int port, std::vector<Entry> leaders, int numThreads);
         Replica(int port, std::vector<Entry> leaders, int numThreads, int threadId);
