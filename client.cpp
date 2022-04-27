@@ -9,10 +9,6 @@ Client::Client(int port, std::string ip){
     memset(&recvfrom, 0, sizeof(recvfrom));
 	recv_count = 0;
 	this->ip = ip;
-	
-    std::vector<std::pair<std::string, int> > leaders;
-    std::vector<std::pair<std::string, int> > acceptors;
-	read_config(replicas, leaders, acceptors);
 };
 
 Client::~Client(){

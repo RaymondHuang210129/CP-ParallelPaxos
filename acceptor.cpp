@@ -33,18 +33,32 @@ void Acceptor::terminate() {
 }
 
 int main(int argc, char *argv[]) {
-    // 0      1     
-    // server [port]
-    if(argc != 2) {
+    // 0      1          2 
+    // server [address]  [port]
+    if(argc != 3) {
         std::cout << "Invalid arguments count. Should enter server [port] \n " << std::endl;
         exit(1);
     }
-    Acceptor tmpAcceptor(atoi(argv[1]));
-    std::thread acceptorThread([&tmpAcceptor]() {
-        tmpAcceptor.run(nullptr);
-        return nullptr;
-    });
+    std::vector<Entry> replicas;
+    std::vector<Entry> leaders;
+    std::vector<Entry> acceptors;
+    read_config(replicas, leaders, acceptors);
+    std::string myAddress = argv[1];
+    int myPort = atoi(argv[2]);
+    Entry myEntry = getMyEntry(replicas, myAddress, myPort);
 
-    acceptorThread.join();
+    std::vector<std::thread> acceptorsThreads;
+    for (int i = 0; i < myEntry.numThreads; i++){
+        int acceptorPort = myEntry.threadStartPort + i;
+        acceptorsThreads.emplace_back([&leaders, i, &myEntry, acceptorPort]() {
+            Acceptor tmpAcceptor(acceptorPort);
+            tmpAcceptor.run(nullptr);
+            return nullptr;
+        });
+	}
+
+    for(int i = 0; i < acceptorsThreads.size(); ++i){
+        acceptorsThreads.at(i).join();
+    }
     return 0;
 }

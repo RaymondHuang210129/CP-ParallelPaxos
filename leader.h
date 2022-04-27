@@ -8,12 +8,14 @@ class Leader {
         Node* node;
         struct sockaddr_in recvfrom;
         bool shouldTerminate;
-        int port;
         int numberOfCommander;
+        int threadID;
+        int port;
+        Entry myEntry;
 		std::vector<std::thread> commanderThreads;
 
     public:
-        Leader(int port, int numberOfCommander);
+        Leader(Entry myEntry, int numberOfCommander, int threadID, std::vector<Entry>& replicas, std::vector<Entry>& acceptors);
 		~Leader();
         void run(void* arg);
         void terminate();

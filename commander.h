@@ -17,8 +17,7 @@ class Commander {
         std::vector<std::pair<std::string, int>> replicas;
 
     public:
-        Commander(int port, std::vector<std::pair<std::string, int>> acceptors, 
-                            std::vector<std::pair<std::string, int>> replicas);
+        Commander(int port, int leaderThreaID, std::vector<Entry> acceptors, std::vector<Entry> replicas);
 		~Commander();
         void run(void* arg);
         void terminate();

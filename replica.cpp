@@ -155,24 +155,20 @@ int main(int argc, char* argv[]) {
     Entry myEntry = getMyEntry(replicas, myAddress, myPort);
 
     std::vector<std::thread> threads;
-    std::vector<std::pair<std::string, int> > localAddresses;
     
     for (int threadId = 0; threadId < myEntry.numThreads; threadId++) {
-        if (threadId != myEntry.numThreads - 1) {
-            // create threads for handler threads
-            threads.emplace_back([&localAddresses, threadId, &myEntry, &leaders]() {
-                Replica replica(myEntry.threadStartPort + threadId, leaders, myEntry.numThreads, threadId);
-                replica.runParallel(nullptr);
-            });
-            semaphores.push_back(new Semaphore(0));
-        } else {
-            // create thread for executer
-            threads.emplace_back([&localAddresses, threadId, &myEntry, &leaders]() {
-                Replica replica(localAddresses[threadId].second, leaders);
-                replica.runExecuter(nullptr);
-            });
-        }
+        // create threads for handler threads
+        threads.emplace_back([threadId, &myEntry, &leaders]() {
+            Replica replica(myEntry.threadStartPort + threadId, leaders, myEntry.numThreads, threadId);
+            replica.runParallel(nullptr);
+        });
+        semaphores.push_back(new Semaphore(0));
     }
+
+    threads.emplace_back([&myEntry, &leaders]() {
+        Replica replica(myEntry.threadStartPort + myEntry.numThreads, leaders);
+        replica.runExecuter(nullptr);
+    });
 
     for (int i = 0; i < threads.size(); i++) {
         threads[i].join();

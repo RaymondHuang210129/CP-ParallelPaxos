@@ -41,6 +41,7 @@ struct Entry{
         this->threadStartPort = threadStartPort;
         this->numThreads = numThreads;
     }
+    Entry() {}
 };
 
 void read_config(std::vector<Entry> &replicas, std::vector<Entry> &leaders,

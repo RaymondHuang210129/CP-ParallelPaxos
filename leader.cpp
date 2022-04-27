@@ -10,36 +10,22 @@
 #include "commander.h"
 
 
-Leader::Leader(int port, int numberOfCommander){
-    node = new Node(port);
-    this->port = port;
+Leader::Leader(Entry myEntry, int numberOfCommander, int threadID, std::vector<Entry>& replicas, std::vector<Entry>& acceptors){
+    this->myEntry = myEntry;
     this->numberOfCommander = numberOfCommander;
+    this->threadID = threadID;
+    this->port = myEntry.threadStartPort + threadID;
+    node = new Node(port);
     memset(&recvfrom, 0, sizeof(recvfrom));
 	shouldTerminate = false;
-	
-    for(int i = 1; i<=this->numberOfCommander; ++i){
-        int commander_port = i+port;
-		
-        commanderThreads.emplace_back([commander_port]() {
-			std::vector<std::pair<std::string, int> > replicas;
-			std::vector<std::pair<std::string, int> > leaders;
-			std::vector<std::pair<std::string, int> > acceptors;
-			read_config(replicas, leaders, acceptors);
-            Commander commander(commander_port, replicas, acceptors);
+	int commanderStartPort = myEntry.threadStartPort + myEntry.numThreads + threadID * numberOfCommander;
+    for(int i = 0; i < this->numberOfCommander; ++i){
+        int commanderPort = commanderStartPort+i;
+        commanderThreads.emplace_back([commanderPort, &threadID, &replicas, &acceptors]() {
+            Commander commander(commanderPort, threadID, replicas, acceptors);
             commander.run(nullptr);
             return nullptr;
         });
-
-        // std::thread commanderThread([port]() {
-        //     std::vector<std::pair<std::string, int> > replicas;
-        //     std::vector<std::pair<std::string, int> > leaders;
-        //     std::vector<std::pair<std::string, int> > acceptors;
-        //     read_config(replicas, leaders, acceptors);
-        //     Commander commander(port, replicas, acceptors);
-        //     commander.run(nullptr);
-        //     return nullptr;
-        // });
-        //commanderThreads.push_back(commanderThread);
     }
 };
 
@@ -74,27 +60,35 @@ void Leader::terminate(){
 }
 
 int main(int argc, char *argv[]) {
-    // 0      1                     2
-    // server [number of commander] [leader ip]
-    if(argc != 3) {
-        std::cout << "Invalid arguments count. Should enter server [number of commander] [leader ip]\n " << std::endl;
+    // 0      1           2             3
+    // server [leader ip] [leader port] [number of commander]
+    if(argc != 4) {
+        std::cout << "Invalid arguments count. Should enter server [leader ip] [leader port] [number of commander]\n " << std::endl;
         exit(1);
     }
 	
-	std::vector<std::pair<std::string, int> > replicas;
-	std::vector<std::pair<std::string, int> > leaders;
-	std::vector<std::pair<std::string, int> > acceptors;
-	read_config(replicas, leaders, acceptors);
+	// std::vector<std::pair<std::string, int> > replicas;
+	// std::vector<std::pair<std::string, int> > leaders;
+	// std::vector<std::pair<std::string, int> > acceptors;
+	// read_config(replicas, leaders, acceptors);
+    
+
+    std::vector<Entry> replicas;
+    std::vector<Entry> leaders;
+    std::vector<Entry> acceptors;
+    read_config(replicas, leaders, acceptors);
+    std::string myAddress = argv[1];
+    int leaderPort = atoi(argv[2]);
+    Entry myEntry = getMyEntry(replicas, myAddress, leaderPort);
 
 	std::vector<std::thread> leaderThreads;
-    for (int i = 0; i < leaders.size(); i++){
-		if(leaders[i].first == argv[2]){
-			leaderThreads.emplace_back([&leaders, &argv, i]() {
-				Leader leader(leaders[i].second, atoi(argv[1]));
-				leader.run(nullptr);
-				return nullptr;
-			});
-		}
+    int numberOfCommander = atoi(argv[3]);
+    for (int i = 0; i < myEntry.numThreads; i++){
+        leaderThreads.emplace_back([&leaders, &numberOfCommander, i, &myEntry, &replicas, &acceptors]() {
+            Leader leader(myEntry, numberOfCommander, i, replicas, acceptors);
+            leader.run(nullptr);
+            return nullptr;
+        });
 	}
     
 	for(int i = 0; i < leaderThreads.size(); ++i){

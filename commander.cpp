@@ -13,10 +13,14 @@
 #include <utility>
 
 
-Commander::Commander(int port, std::vector<std::pair<std::string, int> > replicas, std::vector<std::pair<std::string, int> > acceptors){
+Commander::Commander(int port, int leaderThreadID, std::vector<Entry> replicas, std::vector<Entry> acceptors){
     node = new Node(port);
-    this->acceptors = acceptors;
-    this->replicas = replicas;
+    for (int i = 0; i < replicas.size(); i++) {
+        this->replicas.push_back(std::make_pair(replicas[i].address, replicas[i].threadStartPort + i));
+    }
+    for (int i = 0; i < acceptors.size(); i++) {
+        this->acceptors.push_back(std::make_pair(acceptors[i].address, acceptors[i].threadStartPort + i));
+    }
     memset(&recvfrom, 0, sizeof(recvfrom));
 	shouldTerminate = false;
 };
