@@ -118,4 +118,8 @@ leader
 acceptor
 message
 
+# Visual Studio 2015 cache/options directory
+.vs/
+.vscode/
+
 # End of https://www.toptal.com/developers/gitignore/api/windows,macos,linux,c++
