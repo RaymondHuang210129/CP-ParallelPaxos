@@ -21,7 +21,7 @@ Leader::Leader(Entry myEntry, int numberOfCommander, int threadID, std::vector<E
 	this->commanderStartPort = myEntry.threadStartPort + myEntry.numThreads + threadID * numberOfCommander;
     for(int i = 0; i < this->numberOfCommander; ++i){
         int commanderPort = commanderStartPort+i;
-        commanderThreads.emplace_back([commanderPort, &threadID, &replicas, &acceptors]() {
+        commanderThreads.emplace_back([commanderPort, threadID, &replicas, &acceptors]() {
             Commander commander(commanderPort, threadID, replicas, acceptors);
             commander.run(nullptr);
             return nullptr;

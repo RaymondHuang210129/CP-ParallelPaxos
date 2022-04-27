@@ -69,15 +69,15 @@ void Replica::runParallel(void* arg) {
         Request* request = dynamic_cast<Request*>(m);
         Decision* decision = dynamic_cast<Decision*>(m);
         if (request != nullptr) {
-            if (std::hash<std::string>{}(request->serialize()) % numThreads != threadId) {
-                return;
+            if (stoi(request->getCommand().getContent()) % numThreads != threadId) {
+                continue;
             }
             std::cout << "Replica received Request message " << request->serialize() << std::endl;
             requests.insert(request->getCommand());
             proposeParallel();
         } else if (decision != nullptr) {
             if (numThreads != 1 && decision->getSlot() % numThreads != threadId) {
-                return;
+                continue;
             }
             std::cout << "Replica received Decision message " << decision->serialize() << std::endl;
             decisions[decision->getSlot()] = decision->getCommand();
