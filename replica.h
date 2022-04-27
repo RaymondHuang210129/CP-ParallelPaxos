@@ -13,6 +13,7 @@
 class Replica {
     private:
         Node* node;
+        Node* resendNode;
         struct sockaddr_in recvfrom;
         bool shouldTerminate;
         std::set<Command> requests;
