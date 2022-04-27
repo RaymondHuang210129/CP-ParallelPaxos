@@ -41,7 +41,7 @@ void Leader::run(void* arg) {
         if (propose != nullptr) {
             std::cout << "Leader Receive Propose message " << propose->serialize() << std::endl;
             Assign assign(propose->getSlot(), propose->getCommand());
-            node->send_data("127.0.0.1", commanderStartPort+(assignCommander%numberOfCommander)+1, assign.serialize());
+            node->send_data("127.0.0.1", commanderStartPort+(assignCommander%numberOfCommander), assign.serialize());
         }
         delete m;
         assignCommander+=1;

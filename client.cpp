@@ -50,7 +50,7 @@ Result Client::recv(){
 
 void Client::run(){
 	while(!needTerminate()){
-		std::string cmd = "cmd" + std::to_string(recv_count) + "@" + std::to_string(node->getPort());
+		std::string cmd = std::to_string(recv_count);//"cmd" + std::to_string(recv_count) + "@" + std::to_string(node->getPort());
 		Request request = Request(Command(cmd, ip, node->getPort()));
 		send(request.serialize());
 
