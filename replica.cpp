@@ -84,6 +84,7 @@ void Replica::runParallel(void* arg) {
                         requests.insert(proposedCommand);
                     }
                 }
+                std::cout << "execute slotOut " << slotOut << std::endl;
                 logs[slotOut] = decidedCommand;
                 slotOut++;
                 semaphores[threadId]->notify();
