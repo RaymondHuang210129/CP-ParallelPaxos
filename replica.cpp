@@ -58,12 +58,14 @@ Replica::~Replica() {
 
 /* This method should be called by handler thread */
 void Replica::runParallel(void* arg) {
-    // std::thread timerThread([this]{
-    //     while (true) {
-    //         std::this_thread::sleep_for(std::chrono::milliseconds(100));
-    //         this->resendProposal();
-    //     }
-    // });
+    std::thread timerThread([this]{
+        this->resendNode = new Node(61616);
+        while (true) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            this->resendProposal();
+        }
+        delete this->resendNode;
+    });
     while (!shouldTerminate) {
         Message* m = Message::deserialize(node->receive_data((struct sockaddr_in *)&recvfrom));
         Request* request = dynamic_cast<Request*>(m);
@@ -101,7 +103,7 @@ void Replica::runParallel(void* arg) {
         } 
         delete m;
     }
-    //timerThread.join();
+    timerThread.join();
 }
 
 /* This method should be called by executer thread */
@@ -147,7 +149,7 @@ void Replica::resendProposal() {
     this->proposalMutex.lock();
     for (auto it = proposals.begin(); it != proposals.end(); it++) {
         Propose propose(it->first, it->second);
-        this->node->broadcast_data(this->leaders, propose.serialize());
+        resendNode->broadcast_data(leaders, propose.serialize());
     }
     this->proposalMutex.unlock();
 }
