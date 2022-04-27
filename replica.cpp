@@ -100,6 +100,7 @@ void Replica::runParallel(void* arg) {
             proposeParallel();
         } 
         delete m;
+        timerThread.join();
     }
 }
 
