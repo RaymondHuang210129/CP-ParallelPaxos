@@ -28,7 +28,7 @@ class Replica {
         void proposeParallel();
         void executeParallel(Command command);
     public:
-        Replica(int port, std::vector<Entry> leaders);
+        Replica(int port, std::vector<Entry> leaders, int numThreads);
         Replica(int port, std::vector<Entry> leaders, int numThreads, int threadId);
         void runParallel(void* arg);
         void runExecuter(void* arg);

@@ -12,8 +12,9 @@ static std::vector<Semaphore*> semaphores;
 static std::vector<Command> logs;
 
 /* This constructor is used to create a executer thread of replica. */
-Replica::Replica(int port, std::vector<Entry> leaders) {
+Replica::Replica(int port, std::vector<Entry> leaders, int numThreads) {
     node = new Node(port);
+    this->numThreads = numThreads;
     memset(&recvfrom, 0, sizeof(recvfrom));
     std::vector<std::pair<std::string, int> > targetLeaders;
     if (numThreads == 1 && leaders.size() > 0 && leaders[0].numThreads > 1) {
@@ -136,7 +137,7 @@ void Replica::terminate() {
 }
 
 int main(int argc, char* argv[]) {
-    // 0      1     
+    // 0      1         2
     // server [address] [port]
 
     if(argc != 3) {
@@ -166,7 +167,7 @@ int main(int argc, char* argv[]) {
     }
 
     threads.emplace_back([&myEntry, &leaders]() {
-        Replica replica(myEntry.threadStartPort + myEntry.numThreads, leaders);
+        Replica replica(myEntry.threadStartPort + myEntry.numThreads, leaders, myEntry.numThreads);
         replica.runExecuter(nullptr);
     });
 
