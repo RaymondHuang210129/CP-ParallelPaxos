@@ -3,6 +3,7 @@
 #include <vector>
 #include <utility>
 #include <string>
+#include <mutex>
 #include "node.h"
 #include "message.h"
 
