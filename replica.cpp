@@ -58,6 +58,17 @@ Replica::~Replica() {
 
 /* This method should be called by handler thread */
 void Replica::runParallel(void* arg) {
+    std::thread timerThread([this]{
+        while (true) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            this->proposalMutex.lock();
+            for (auto it = proposals.begin(); it != proposals.end(); it++) {
+                Propose propose(it->first, it->second);
+                this->node->broadcast_data(this->leaders, propose.serialize());
+            }
+            this->proposalMutex.unlock();
+        }
+    });
     while (!shouldTerminate) {
         Message* m = Message::deserialize(node->receive_data((struct sockaddr_in *)&recvfrom));
         Request* request = dynamic_cast<Request*>(m);
@@ -75,6 +86,7 @@ void Replica::runParallel(void* arg) {
             }
             std::cout << "Replica received Decision message " << decision->serialize() << std::endl;
             decisions[decision->getSlot()] = decision->getCommand();
+            proposalMutex.lock();
             while (decisions.find(slotOut) != decisions.end()) {
                 Command decidedCommand = decisions[slotOut];
                 if (proposals.find(slotOut) != proposals.end()) {
@@ -89,6 +101,7 @@ void Replica::runParallel(void* arg) {
                 slotOut++;
                 semaphores[threadId]->notify();
             }
+            proposalMutex.unlock();
             proposeParallel();
         } 
         delete m;
@@ -112,6 +125,7 @@ void Replica::executeParallel(Command command) {
 
 void Replica::proposeParallel() {
     std::cout << "Replica proposing" << std::endl;
+    proposalMutex.lock();
     while (requests.size() > 0) {
         Command command = *requests.begin();
         if (decisions.find(slotIn) == decisions.end()) {
@@ -130,7 +144,7 @@ void Replica::proposeParallel() {
         }
         slotIn += numThreads;
     }
-
+    proposalMutex.unlock();
 }
 
 void Replica::terminate() {
