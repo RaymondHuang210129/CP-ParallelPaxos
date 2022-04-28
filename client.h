@@ -1,3 +1,4 @@
+#include "message.h"
 #include "node.h"
 
 #ifndef CLIENT_H

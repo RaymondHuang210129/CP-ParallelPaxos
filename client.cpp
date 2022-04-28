@@ -8,7 +8,6 @@
 #include <string>
 #include <thread>
 
-#include "message.h"
 #define CLIENT_RECV_MAX 100
 
 Client::Client(int port, std::string ip, int threadId, int clientRecvMax) {
@@ -59,7 +58,7 @@ void Client::run() {
     while (!needTerminate()) {
         std::string cmd = std::to_string(
             recvCount + threadId);  //"cmd" + std::to_string(recvCount) + "@" +
-                                    //std::to_string(node->getPort());
+                                    // std::to_string(node->getPort());
         Request request = Request(Command(cmd, ip, node->getPort()));
         send(request.serialize());
 
