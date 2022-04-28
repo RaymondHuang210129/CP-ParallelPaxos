@@ -4,13 +4,14 @@
 #define MESSAGE_H
 
 class Command {
-private:
+   private:
     std::string content;
     std::pair<std::string, int> source;
-public:
+
+   public:
     Command();
     Command(std::string str, std::string address, int port);
-    bool operator < (const Command& other) const; 
+    bool operator<(const Command& other) const;
     std::string serialize();
     static Command* deserialize(std::string serialized);
     std::string getContent();
@@ -20,10 +21,11 @@ public:
 };
 
 class Result {
-private:
+   private:
     std::string content;
     std::pair<std::string, int> source;
-public:
+
+   public:
     Result(std::string str, std::string address, int port);
     std::string serialize();
     static Result* deserialize(std::string serialized);
@@ -34,8 +36,8 @@ public:
 };
 
 class Message {
-private:
-public:
+   private:
+   public:
     Message();
     virtual std::string serialize() = 0;
     virtual ~Message();
@@ -43,28 +45,31 @@ public:
 };
 
 class Request : public Message {
-private:
+   private:
     Command command;
-public:
+
+   public:
     Request(Command command);
     virtual std::string serialize();
     Command getCommand();
 };
 
 class Response : public Message {
-private:
+   private:
     Result result;
-public:
+
+   public:
     Response(Result result);
     virtual std::string serialize();
     Result getResult();
 };
 
 class Propose : public Message {
-private:
+   private:
     int slot;
     Command command;
-public:
+
+   public:
     Propose(int slot, Command command);
     virtual std::string serialize();
     int getSlot();
@@ -72,10 +77,11 @@ public:
 };
 
 class Accept : public Message {
-private:
+   private:
     int slot;
     Command command;
-public:
+
+   public:
     Accept(int slot, Command command);
     virtual std::string serialize();
     int getSlot();
@@ -83,10 +89,11 @@ public:
 };
 
 class Accepted : public Message {
-private:
+   private:
     int slot;
     Command command;
-public:
+
+   public:
     Accepted(int slot, Command command);
     virtual std::string serialize();
     int getSlot();
@@ -94,10 +101,11 @@ public:
 };
 
 class Decision : public Message {
-private:
+   private:
     int slot;
     Command command;
-public:
+
+   public:
     Decision(int slot, Command command);
     virtual std::string serialize();
     int getSlot();
@@ -105,10 +113,11 @@ public:
 };
 
 class Assign : public Message {
-private:    
+   private:
     int slot;
     Command command;
-public:
+
+   public:
     Assign(int slot, Command command);
     virtual std::string serialize();
     int getSlot();

@@ -1,11 +1,12 @@
-#include <string>
-#include <iostream>
-#include "message.h"
 #include "acceptor.h"
-#include <functional>
-#include <thread>
-#include <cassert>
 
+#include <cassert>
+#include <functional>
+#include <iostream>
+#include <string>
+#include <thread>
+
+#include "message.h"
 
 Acceptor::Acceptor(int port) {
     node = new Node(port);
@@ -15,12 +16,15 @@ Acceptor::Acceptor(int port) {
 
 void Acceptor::run(void* arg) {
     while (!shouldTerminate) {
-        Message* m = Message::deserialize(node->receive_data((struct sockaddr_in *)&recvfrom));
+        Message* m = Message::deserialize(
+            node->receive_data((struct sockaddr_in*)&recvfrom));
         Accept* accept = dynamic_cast<Accept*>(m);
         if (accept != nullptr) {
-            //std::cout << "Acceptor received Accept message " << accept->serialize() << std::endl;
+            // std::cout << "Acceptor received Accept message " <<
+            // accept->serialize() << std::endl;
             Accepted accepted(accept->getSlot(), accept->getCommand());
-            node->send_data((struct sockaddr_in *)&recvfrom, accepted.serialize());
+            node->send_data((struct sockaddr_in*)&recvfrom,
+                            accepted.serialize());
         }
         delete m;
     }
@@ -32,11 +36,12 @@ void Acceptor::terminate() {
     return;
 }
 
-int main(int argc, char *argv[]) {
-    // 0      1          2 
+int main(int argc, char* argv[]) {
+    // 0      1          2
     // server [address]  [port]
-    if(argc != 3) {
-        std::cout << "Invalid arguments count. Should enter server [port] \n " << std::endl;
+    if (argc != 3) {
+        std::cout << "Invalid arguments count. Should enter server [port] \n "
+                  << std::endl;
         exit(1);
     }
     std::vector<Entry> replicas;
@@ -48,16 +53,16 @@ int main(int argc, char *argv[]) {
     Entry myEntry = getMyEntry(acceptors, myAddress, myPort);
 
     std::vector<std::thread> acceptorsThreads;
-    for (int i = 0; i < myEntry.numThreads; i++){
+    for (int i = 0; i < myEntry.numThreads; i++) {
         int acceptorPort = myEntry.threadStartPort + i;
         acceptorsThreads.emplace_back([&leaders, i, &myEntry, acceptorPort]() {
             Acceptor tmpAcceptor(acceptorPort);
             tmpAcceptor.run(nullptr);
             return nullptr;
         });
-	}
+    }
 
-    for(int i = 0; i < acceptorsThreads.size(); ++i){
+    for (int i = 0; i < acceptorsThreads.size(); ++i) {
         acceptorsThreads.at(i).join();
     }
     return 0;
