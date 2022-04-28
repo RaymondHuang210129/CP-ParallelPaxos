@@ -95,7 +95,7 @@ int main(int argc, char *argv[]) {
 	for(int i = 0; i < numOfClient; ++i){
 		int port = i + atoi(argv[2]);
 		std::string ip = argv[1];
-		clients.emplace_back(new Client(port, ip, numOfClient, clientRecvMax));
+		clients.emplace_back(new Client(port, ip, i, clientRecvMax));
 	}
 	
 	for(int i = 0; i < numOfClient; ++i){

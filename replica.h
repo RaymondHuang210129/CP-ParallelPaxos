@@ -21,6 +21,7 @@ class Replica {
         std::map<int, Command> proposals;
         std::vector<std::pair<std::string, int> > leaders;
         std::mutex proposalMutex;
+        std::vector<Command>* logsOfThread;
         int slotIn;
         int slotOut;
         int numThreads;

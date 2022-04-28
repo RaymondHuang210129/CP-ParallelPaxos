@@ -9,7 +9,7 @@
 #include "semaphore.h"
 
 static std::vector<Semaphore*> semaphores;
-static std::vector<Command> logs;
+static std::vector<std::vector<Command>> logs;
 
 /* This constructor is used to create a executer thread of replica. */
 Replica::Replica(int port, std::vector<Entry> leaders, int numThreads) {
@@ -39,6 +39,7 @@ Replica::Replica(int port, std::vector<Entry> leaders, int numThreads) {
 /* This constructor is used to create a handler thread of replica */
 Replica::Replica(int port, std::vector<Entry> leaders, int numThreads, int threadId) {
     node = new Node(port);
+    logsOfThread = &(logs[threadId]);
     memset(&recvfrom, 0, sizeof(recvfrom));
     std::vector<std::pair<std::string, int> > targetLeaders;
     for (int i = 0; i < leaders.size(); i++) {
@@ -94,7 +95,7 @@ void Replica::runParallel(void* arg) {
                     }
                 }
                 //std::cout << "execute slotOut " << slotOut << std::endl;
-                logs[slotOut] = decidedCommand;
+                (*logsOfThread)[slotOut / numThreads] = decidedCommand;
                 slotOut += numThreads;
                 semaphores[threadId]->notify();
             }
@@ -110,7 +111,7 @@ void Replica::runParallel(void* arg) {
 void Replica::runExecuter(void* arg) {
     for (int slot = 0;; slot++) {
         semaphores[slot % numThreads]->wait();
-        Command command = logs[slot];
+        Command command = (logs[slot % numThreads])[slot / numThreads];
         executeParallel(command);
     }
 }
@@ -170,13 +171,17 @@ int main(int argc, char* argv[]) {
 
     std::string myAddress = argv[1];
     int myPort = atoi(argv[2]);
-    logs.reserve(10000000);
 
     std::vector<Entry> replicas;
     std::vector<Entry> leaders;
     std::vector<Entry> acceptors;
     read_config(replicas, leaders, acceptors);
     Entry myEntry = getMyEntry(replicas, myAddress, myPort);
+
+    logs.resize(myEntry.numThreads);
+    for (int i = 0; i < myEntry.numThreads; i++) {
+        logs[i].reserve(10000000);
+    }
 
     std::vector<std::thread> threads;
     
