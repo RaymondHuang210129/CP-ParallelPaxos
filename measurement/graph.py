@@ -77,12 +77,13 @@ print('\n\nPlot graph')
 x_list = sorted(list(lines[0][1].keys()))
 print(x_list)
 #print(lines)
+plt.figure(dpi=150)
 for num, means in lines:
     y_list = []
     for x in x_list:
         y_list.append(means[x])
     print(num, ':', y_list)
-    plt.plot(x_list, y_list, label=str(num))
+    plt.plot(x_list, y_list, label='workload='+str(num))
 
 plt.legend(loc = "best")
 if thread_num_as_x_axis:
