@@ -6,16 +6,6 @@ import matplotlib.pyplot as plt
 START_SEC = 11
 SCAN_RANGE = 1000
 
-print('''    1. Acc Cnt
-    2. Acc thread Cnt
-    3. Lea thread Cnt
-    4. Comm thread Cnt
-    5. Replica thread Cnt
-    6. Client thread Cnt''')
-
-x_axis = int(input('Enter x axis:'))-1
-line_factor = int(input('Enter line factor:'))-1
-
 x_labels = ["Acceptor Number",
             "Acceptor Thread Number",
             "Leader Thread Number",
@@ -24,7 +14,15 @@ x_labels = ["Acceptor Number",
             "Client Thread Number",
             ]
 
-if x_axis == line_factor or x_axis < 0 or x_axis > 5 or line_factor < 0 or line_factor > 5:
+print('\n'.join(x_labels))
+
+x_axis = int(input('Enter x axis:'))-1
+line_factor = int(input('Enter line factor:'))-1
+
+if x_axis < 0 or x_axis > 5 or line_factor < 0 or line_factor > 5:
+    raise ValueError("All values must in 1~6")
+
+if x_axis == line_factor:
     raise ValueError("x axis cannot be same as line factor")
 
 filename_keyword = input("Enter log file name:")
