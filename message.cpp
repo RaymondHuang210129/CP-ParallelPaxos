@@ -1,10 +1,5 @@
 #include "message.h"
 
-#include <cassert>
-#include <iostream>
-#include <memory>
-#include <string>
-
 Command::Command(){};
 Command::Command(std::string str, std::string address, int port) {
     this->content = str;

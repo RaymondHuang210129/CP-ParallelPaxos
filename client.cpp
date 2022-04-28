@@ -2,12 +2,6 @@
 
 #include <sys/time.h>
 
-#include <chrono>
-#include <iostream>
-#include <mutex>
-#include <string>
-#include <thread>
-
 #define CLIENT_RECV_MAX 100
 
 Client::Client(int port, std::string ip, int threadId, int clientRecvMax) {

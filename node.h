@@ -4,6 +4,7 @@
 #include <string.h>      //strlen
 #include <sys/socket.h>  //socket
 
+#include <cassert>
 #include <fstream>   // ifstream
 #include <iostream>  //cout
 #include <string>    //string

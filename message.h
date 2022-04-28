@@ -1,3 +1,6 @@
+#include <cassert>
+#include <iostream>
+#include <memory>
 #include <string>
 
 #ifndef MESSAGE_H

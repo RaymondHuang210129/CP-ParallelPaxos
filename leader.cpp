@@ -2,12 +2,6 @@
 
 #include <pthread.h>
 
-#include <cassert>
-#include <functional>
-#include <iostream>
-#include <string>
-#include <thread>
-
 #include "commander.h"
 #include "message.h"
 #include "node.h"

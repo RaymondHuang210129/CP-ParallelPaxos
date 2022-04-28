@@ -1,11 +1,5 @@
 #include "acceptor.h"
 
-#include <cassert>
-#include <functional>
-#include <iostream>
-#include <string>
-#include <thread>
-
 #include "message.h"
 
 Acceptor::Acceptor(int port) {

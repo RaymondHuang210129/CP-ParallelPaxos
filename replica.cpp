@@ -1,12 +1,5 @@
 #include "replica.h"
 
-#include <cassert>
-#include <functional>
-#include <iostream>
-#include <string>
-#include <thread>
-#include <unordered_map>
-
 #include "message.h"
 #include "semaphore.h"
 

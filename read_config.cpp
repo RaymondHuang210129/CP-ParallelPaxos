@@ -1,5 +1,3 @@
-#include <cassert>
-
 #include "node.h"
 
 void read_config(std::vector<Entry> &replicas, std::vector<Entry> &leaders,

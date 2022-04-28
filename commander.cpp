@@ -2,16 +2,6 @@
 
 #include <pthread.h>
 
-#include <cassert>
-#include <chrono>
-#include <fstream>
-#include <functional>
-#include <iostream>
-#include <string>
-#include <thread>
-#include <unordered_set>
-#include <utility>
-
 #include "message.h"
 #include "node.h"
 
