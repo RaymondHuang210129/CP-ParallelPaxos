@@ -37,7 +37,7 @@ To run Acceptor role on machines:
 
 ## Project Report
 
-### Background (3 pages)
+### Background
 #### What is Paxos
 - A classic protocol that could achieve agreement(consensus) in a distributed system
 - Single Paxos: could only accept one value
@@ -78,14 +78,14 @@ To run Acceptor role on machines:
 3. Why not include leader election
 - In a stable network, leader re-election won't happen frequently, therefore won't be a big issue to the overall performance.
 
-### Reason and Motivation (2 pages)
+### Reason and Motivation
 - Why do we choose this topic (making Paxos parallel)?
 1. two of us are also taking CS505(distributed systems), which asked us to implement [Paxos](https://github.com/emichael/dslabs) using Java. The projects provide thorough test such as depth first search to verify that our implementation satisfy safety property, breadth first search that our implementation satisfy the performance requirement.
     - Through debugging those tests, we soon figure out that the active leader would be the performance bottle neck since this server node will need to handle all replica's proposal and spawn commander to ask for votes from acceptor. Moreover, it will need to count for votes and send out decisions back to all replicas.
     - We wish to see if we can design the Paxos in parallel to solve the performance bottleneck.
 2. Besides, since the [Paxos](https://github.com/emichael/dslabs) project uses pseudo network to simulate real network situation, it already provides all network api. Since the lab is very challenging, we really learn a lot from it, so we wish to implement the Paxos by ourself from scratch and really test the performance in a real-world network.
 
-### Expected Result (Analysis before implementaion) (1~2 pages)
+### Expected Result (Analysis before implementaion)
 - The serial version cannot handle a large amount of data simultaneously.
 - After making paxos parallel, the replica would become the new bottleneck since it will need to execute command serially to satisfy linearizability.
 - Using more commander threads could help relieve the workload of sending and waiting for votes, thus increase the performance.
@@ -150,7 +150,7 @@ To run Acceptor role on machines:
     - `Command Count` : Sepcify how many number of requests each thread needs to send.
         - In experiments: The `Command Number` is set to a large number to allow measuring the throughput in each second.
 
-#### Replica (2~3 pages)
+#### Replica
 
 - Arguments: `hostIP`:`hostPort` as the process identifier
 
@@ -175,7 +175,7 @@ To run Acceptor role on machines:
 ![](https://i.imgur.com/mtLps0c.png)
 
 
-#### Leader (1~2 pages)
+#### Leader
 
 - Arguments: `hostIP`:`hostPort` as the process identifier, and `numCommander` as number of commander thread spawned by eaxh leader thread
 
@@ -193,7 +193,7 @@ To run Acceptor role on machines:
     1. Leader bottleneck: For each request being processed in original Paxos algorithm, each leader will create commander threads to sends and receives most number of messages. Therefore, creating threads for each propose message generates a considerable overhead.
     2. To decrease overhead, we decided to implement commander thread pool. Therefore, instead of spawning a new commander thread, we assign proposals to existing threads in the thread pool in a round robin fashion. Hence each commander thread in thread pool becomes the new performance bottleneck
 
-#### Acceptor (1 pages)
+#### Acceptor
 
 - Arguments: `hostIP`:`hostPort` as the process identifier
 
@@ -202,7 +202,7 @@ To run Acceptor role on machines:
     2. Each acceptor thread would send the accepted message back to the commander which means that the proposal has been accepted by this acceptor.
 
 
-### Scaling results (3~5 pages)
+### Scaling results
 
 #### Experiment environment:
 - Testbed: 
