@@ -2,9 +2,9 @@
 An attempt to implement Parallel Paxos for throughput improvement
 
 This project is done by:
-Tse-Jui Huang, [@RaymondHuang210129](https://github.com/RaymondHuang210129)
-Po-Jen Hsu, [@alexpjhsu](https://github.com/alexpjhsu), and 
-Liang-Yu Chen, [@fredchen000](https://github.com/fredchen000)
+- Tse-Jui Huang, [@RaymondHuang210129](https://github.com/RaymondHuang210129)
+- Po-Jen Hsu, [@alexpjhsu](https://github.com/alexpjhsu) 
+- Liang-Yu Chen, [@fredchen000](https://github.com/fredchen000)
 
 ## Get Started
 
