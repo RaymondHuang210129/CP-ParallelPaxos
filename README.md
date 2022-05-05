@@ -1,6 +1,10 @@
 # Purdue CS 525 Final Project
 An attempt to implement Parallel Paxos for throughput improvement
-This project is done by [@RaymondHuang210129](https://github.com/RaymondHuang210129), [@alexpjhsu](https://github.com/alexpjhsu), and [@fredchen000](https://github.com/fredchen000)
+
+This project is done by:
+Tse-Jui Huang, [@RaymondHuang210129](https://github.com/RaymondHuang210129)
+Po-Jen Hsu, [@alexpjhsu](https://github.com/alexpjhsu), and 
+Liang-Yu Chen, [@fredchen000](https://github.com/fredchen000)
 
 ## Get Started
 
