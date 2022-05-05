@@ -1,6 +1,6 @@
 # Purdue CS 525 Final Project
 An attempt to implement Parallel Paxos for throughput improvement
-This project is done by @RaymondHuang210129, @alexpjhsu, and @fredchen000
+This project is done by [@RaymondHuang210129](https://github.com/RaymondHuang210129), [@alexpjhsu](https://github.com/alexpjhsu), and [@fredchen000](https://github.com/fredchen000)
 
 ## Get Started
 
@@ -100,8 +100,6 @@ To run Acceptor role on machines:
 - A getter function for retrieving its binded port.
 
 #### Message & Command (1 page)
-
-> [name=Raymond Huang] subtitle
 
 - Each type of message and command is implemented in classes where all of them extend `serialize()` method to transmit accoss networks.
 
